@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Gamepad from 'react-gamepad'
 
 import Wheel from './g920/wheel';
 import Pedals from './g920/pedals';
