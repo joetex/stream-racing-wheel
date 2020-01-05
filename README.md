@@ -1,4 +1,4 @@
-# Stream Racing Wheel for Logitech G920 on PC
+# Stream a Racing Wheel overlay for Logitech G920 on PC
 
 Don't have 3 cameras to be showing wheel and pedals? This react application lets you connect to your G920 Racing Wheel and show a visual representation of the controls as an overlay.
 
