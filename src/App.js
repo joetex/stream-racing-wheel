@@ -4,7 +4,7 @@ import Wheel from './g920/wheel';
 import Pedals from './g920/pedals';
 import ShifterBase from './g920/shifterbase';
 
-import flatiron from './flatiron';
+import flatstore from 'flatstore';
 
 let defaultButtons = [];
 let defaultAxes = [];
@@ -13,8 +13,8 @@ for (let i = 0; i < 20; i++) {
   defaultAxes.push(0);
 }
 
-flatiron.set("buttons", defaultButtons);
-flatiron.set("axes", defaultAxes);
+flatstore.set("buttons", defaultButtons);
+flatstore.set("axes", defaultAxes);
 class App extends Component {
   constructor(props) {
     super(props)
@@ -33,7 +33,6 @@ class App extends Component {
 
     this.gameLoop = this.gameLoop.bind(this);
     this.onGamepadConnected = this.onGamepadConnected.bind(this);
-    var $this = this;
     window.addEventListener("gamepadconnected", this.onGamepadConnected);
   }
 
@@ -67,7 +66,7 @@ class App extends Component {
     //console.log(gamepads)
     var options = Object.values(this.gamePads).map(gp => {
 
-      let isSelected = gp.index == this.gamePadIndex;
+      let isSelected = gp.index === this.gamePadIndex;
       return (<option selected={isSelected} value={gp.index}>{gp.id}</option>)
 
     }
@@ -99,11 +98,11 @@ class App extends Component {
     if (typeof (b) == "object") {
       return b.pressed;
     }
-    return b == 1.0;
+    return b === 1.0;
   }
 
   gameLoop() {
-    if (this.gamePadIndex == -1)
+    if (this.gamePadIndex === -1)
       return;
 
     //var gp = this.gamePads[this.gamePadIndex];
@@ -125,8 +124,8 @@ class App extends Component {
       axesStates.push(axis);
     }
 
-    flatiron.set("buttons", buttonStates);
-    flatiron.set("axes", axesStates);
+    flatstore.set("buttons", buttonStates);
+    flatstore.set("axes", axesStates);
 
     this.start = requestAnimationFrame(this.gameLoop);
   }

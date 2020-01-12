@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import flatiron from '../flatiron';
+import flatstore from 'flatstore';
 class Wheel extends Component {
 
     render() {
@@ -10,7 +10,7 @@ class Wheel extends Component {
         };
 
         return (
-            <img style={wheelStyle} src="g920/wheel.png" />
+            <img alt="" style={wheelStyle} src="g920/wheel.png" />
         )
     }
 }
@@ -24,4 +24,4 @@ let onCustomProps = (key, value, store, ownProps) => {
     }
 }
 
-export default flatiron.connect([], onCustomWatched, onCustomProps)(Wheel);
+export default flatstore.connect([], onCustomWatched, onCustomProps)(Wheel);

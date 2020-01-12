@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import flatiron from '../flatiron';
+import flatstore from 'flatstore';
 class ShifterBase extends Component {
 
     constructor(props) {
@@ -24,10 +24,11 @@ class ShifterBase extends Component {
             case 4: this.moveX = 0; this.moveY = this.halfGridY; break;
             case 5: this.moveX = this.halfGrid; this.moveY = -this.halfGridY; break;
             case 6: this.moveX = this.halfGrid; this.moveY = this.halfGridY; break;
+            default: speed = '500ms'; this.moveX = 0; this.moveY = 0; break;
         }
         let shifterStyle = {
             width: '150px',
-            'z-index': '999',
+            'zIndex': '999',
             position: 'absolute',
             top: this.props.top + 'px',
             left: this.props.left + 'px',
@@ -41,7 +42,7 @@ class ShifterBase extends Component {
             backgroundColor: 'red',
             width: '10px',
             height: '20px',
-            'z-index': '999',
+            'zIndex': '999',
             position: 'absolute',
             top: highlightX + 'px',
             left: highlightY + 'px',
@@ -51,7 +52,7 @@ class ShifterBase extends Component {
         return (
             <div style={{ position: 'relative' }}>
                 <div style={highlightStyle}></div>
-                <img style={shifterStyle} src="g920/shifter.png" />
+                <img alt="" style={shifterStyle} src="g920/shifter.png" />
             </div>
         )
     }
@@ -77,7 +78,7 @@ let onCustomProps = (key, value, store, ownProps) => {
             default: gear = -1; break;
         }
     }
-    else if ('buttons-' + ownProps.gearButton == key) {
+    else if ('buttons-' + ownProps.gearButton === key) {
         gear = -1;
     }
     return {
@@ -86,4 +87,4 @@ let onCustomProps = (key, value, store, ownProps) => {
     };
 }
 
-export default flatiron.connect([], onCustomWatched, onCustomProps)(ShifterBase);
+export default flatstore.connect([], onCustomWatched, onCustomProps)(ShifterBase);

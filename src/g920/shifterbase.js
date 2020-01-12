@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import flatiron from '../flatiron';
+import flatstore from 'flatstore';
 import Shifter from './shifter';
 
 class ShifterBase extends Component {
@@ -19,7 +19,7 @@ class ShifterBase extends Component {
                     gear5={16}
                     gear6={17}
                     reverse={11} />
-                <img width="250px" src="g920/shifter-base.png" />
+                <img alt="" width="250px" src="g920/shifter-base.png" />
             </div>
         )
     }
@@ -34,4 +34,4 @@ let onCustomProps = (key, value, store, ownProps) => {
     }
 }
 
-export default flatiron.connect([], onCustomWatched, onCustomProps)(ShifterBase);
+export default flatstore.connect([], onCustomWatched, onCustomProps)(ShifterBase);
