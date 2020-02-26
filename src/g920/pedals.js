@@ -11,11 +11,11 @@ class Pedals extends Component {
         }
         return (
             <div style={{ position: 'relative' }}>
-                <Pedal top={-20} left={290} downAmount={50} axis={1} src="g920/gas.png" />
-                <Pedal top={-10} left={160} downAmount={50} axis={2} src="g920/brake.png" />
-                <Pedal top={-10} left={40} downAmount={50} axis={5} src="g920/clutch.png" />
+                <Pedal top={-20} left={290} downAmount={50} axis={1} src="/stream-racing-wheel/g920/gas.png" />
+                <Pedal top={-10} left={160} downAmount={50} axis={2} src="/stream-racing-wheel/g920/brake.png" />
+                <Pedal top={-10} left={40} downAmount={50} axis={5} src="/stream-racing-wheel/g920/clutch.png" />
 
-                <img alt="" style={pedalsStyle} src="g920/pedals.png" />
+                <img alt="" style={pedalsStyle} src="/stream-racing-wheel/g920/pedals.png" />
 
             </div>
         )

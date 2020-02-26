@@ -10,7 +10,7 @@ class Wheel extends Component {
         };
 
         return (
-            <img alt="" style={wheelStyle} src="g920/wheel.png" />
+            <img alt="" style={wheelStyle} src="/stream-racing-wheel/g920/wheel.png" />
         )
     }
 }

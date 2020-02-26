@@ -52,7 +52,7 @@ class ShifterBase extends Component {
         return (
             <div style={{ position: 'relative' }}>
                 <div style={highlightStyle}></div>
-                <img alt="" style={shifterStyle} src="g920/shifter.png" />
+                <img alt="" style={shifterStyle} src="/stream-racing-wheel/g920/shifter.png" />
             </div>
         )
     }

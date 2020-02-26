@@ -19,7 +19,7 @@ class ShifterBase extends Component {
                     gear5={16}
                     gear6={17}
                     reverse={11} />
-                <img alt="" width="250px" src="g920/shifter-base.png" />
+                <img alt="" width="250px" src="/stream-racing-wheel/g920/shifter-base.png" />
             </div>
         )
     }
