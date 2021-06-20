@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './index.css';
 
 import Wheel from './g920/wheel';
 import Pedals from './g920/pedals';
@@ -28,7 +29,8 @@ class App extends Component {
     this.gamePadIndex = -1;
 
     this.state = {
-      gameLoopStarted: false
+      gameLoopStarted: false,
+      rotation: 900
     }
 
     this.gameLoop = this.gameLoop.bind(this);
@@ -61,6 +63,12 @@ class App extends Component {
     this.gameLoop();
   }
 
+  onWheelRotationChange(e) {
+    let rotation = e.target.value;
+    flatstore.set('maxrotation', rotation);
+    this.setState({ rotation })
+  }
+
   render() {
     //let gamepads = navigator.getGamepads();
     //console.log(gamepads)
@@ -73,13 +81,15 @@ class App extends Component {
     );
 
     return (
-      <div style={{ paddingLeft: '50px', backgroundColor: '#133a4d' }}>
-        <select name="gamepadSelection" onChange={(e) => { this.onChange(e) }}>
+      <div style={{ width: '600px', height: '100%', position: 'absolute', top: '0px', left: '0px' }}>
+        <label style={{ color: 'white' }}>Driving System</label><select name="gamepadSelection" onChange={(e) => { this.onChange(e) }}>
           {options}
         </select>
         <br />
+        <label style={{ color: 'white' }}>Max Rotation</label><input name="wheelRotation" type="number" value={this.state.rotation} onChange={(e) => { this.onWheelRotationChange(e) }} />
+        <br />
         <div style={{ position: 'relative', top: '20px', }}>
-          <Wheel axis={0} />
+          <Wheel axis={0} rotation={this.state.rotation} />
         </div>
         <div style={{ position: 'relative', top: '-300px', left: "500px", 'marginLeft': '50px' }}>
           <ShifterBase />

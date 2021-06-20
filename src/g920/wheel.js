@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import flatstore from 'flatstore';
+
+flatstore.set('maxrotation', 900);
 class Wheel extends Component {
 
     render() {
-        let degrees = this.props.rotation * 900;
+        let maxrotation = flatstore.get('maxrotation');
+        let degrees = this.props.currentRotation * (maxrotation / 2);
         let wheelStyle = {
             //width: '400px',
             transform: 'rotate(' + degrees + 'deg)'
@@ -20,7 +23,7 @@ let onCustomWatched = (ownProps) => {
 }
 let onCustomProps = (key, value, store, ownProps) => {
     return {
-        rotation: value
+        currentRotation: value
     }
 }
 
