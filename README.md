@@ -2,6 +2,10 @@
 
 Don't have 3 cameras to be showing wheel and pedals? This react application lets you connect to your G920 Racing Wheel and show a visual representation of the controls as an overlay.
 
+#### Update: 6/19/2021
+
+Added Max Rotation input field.  Default was 900, which no one uses.
+
 ### Use Online
 
 [https://joetex.github.io/stream-racing-wheel/](https://joetex.github.io/stream-racing-wheel/)
