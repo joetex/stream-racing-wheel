@@ -105,6 +105,12 @@ class App extends Component {
       "Gamepad connected at index %d: %s. %d buttons, %d axes.",
       gp.index, gp.id, gp.buttons.length, gp.axes.length
     );
+
+    let currentGamePad = flatstore.get('gamePad');
+    if (!currentGamePad) {
+      this.changeGamepad(gp.index);
+    }
+
     this.gamePads[gp.index] = gp;
     this.setState({ gamePads: this.gamePads })
     if (gp.id.toLowerCase().indexOf("wheel") > -1) {
@@ -135,18 +141,7 @@ class App extends Component {
   render() {
     //let gamepads = navigator.getGamepads();
     //console.log(gamepads)
-    var options = Object.values(this.gamePads).map(gp => {
 
-      // let isSelected = gp.index === this.gamePadIndex;
-      return (<option
-        key={'optionsGamepad' + gp.index}
-        //selected={isSelected} 
-        value={gp.index}>
-        {gp.id}
-      </option>)
-
-    }
-    );
 
     return (
       <div style={{ width: '100%', height: '100%', position: 'absolute', top: '0px', left: '0px', paddingTop: '1rem', paddingLeft: '2rem' }}>
@@ -154,10 +149,7 @@ class App extends Component {
         <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">View on GitHub</a>
         <br />
         <br />
-        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Controller Gamepad</label>
-        <select name="gamepadSelection" defaultValue={this.gamePadIndex} onChange={(e) => { this.onChange(e) }}>
-          {options}
-        </select>
+        <GamepadSelection onChange={(e) => { this.onChange(e) }} />
         <br />
         <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Max Rotation</label><input name="wheelRotation" type="number" value={this.state.rotation} onChange={(e) => { this.onWheelRotationChange(e) }} />
         <br />
@@ -270,6 +262,53 @@ class App extends Component {
 
     this.start = requestAnimationFrame(this.gameLoop);
   }
+}
+
+function GamepadSelection(props) {
+
+  let [gamePadIndex] = flatstore.useWatch('gamePadIndex');
+
+  const changeGamepad = (id) => {
+    console.log(id);
+    var gp = navigator.getGamepads()[id];
+
+    flatstore.set('gamePadIndex', id);
+
+    // gamePadIndex = id;
+    flatstore.set('gamePad', gp)
+    // this.setState({ gamepadIndex: id, gameLoopStarted: true })
+    this.gameLoop();
+  }
+
+  const onChange = (e) => {
+    changeGamepad(e.target.value);
+  }
+
+  let gamePads = navigator.getGamepads();
+
+  var options = Object.values(gamePads).map(gp => {
+    if (!gp)
+      return null;
+    // let isSelected = gp.index === this.gamePadIndex;
+    return (<option
+      key={'optionsGamepad' + gp.id}
+      //selected={isSelected} 
+      value={gp.index}>
+      {gp.id}
+    </option>)
+
+  }
+  );
+
+
+  return (
+    <div>
+      <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Controller Gamepad</label>
+      <select name="gamepadSelection" defaultValue={gamePadIndex} onChange={(e) => { onChange(e); props.onChange(e); }}>
+        {options}
+      </select>
+    </div>
+  )
 }
 
 export default App;
