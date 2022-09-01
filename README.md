@@ -2,9 +2,10 @@
 
 Don't have 3 cameras to be showing wheel and pedals? This react application lets you connect to your G920 Racing Wheel and show a visual representation of the controls as an overlay.
 
-#### Update: 6/19/2021
-
-Added Max Rotation input field.  Default was 900, which no one uses.
+#### NEW (September 1, 2022)
+You can now bind the inputs to work with any steering wheel.  You can also change the images to anything you want. Just scroll to bottom of page.
+- Added Input Re-Binding
+- Added Change Images
 
 ### Use Online
 
@@ -22,7 +23,7 @@ Added Max Rotation input field.  Default was 900, which no one uses.
 
 #### `npm install`
 
-#### `yarn start`
+#### `npm start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
