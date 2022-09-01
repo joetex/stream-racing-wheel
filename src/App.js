@@ -151,14 +151,18 @@ class App extends Component {
     return (
       <div style={{ width: '100%', height: '100%', position: 'absolute', top: '0px', left: '0px', paddingTop: '1rem', paddingLeft: '2rem' }}>
         <h1 style={{ color: 'white' }}>Stream Racing Wheel</h1>
-        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem' }}>Controller Gamepad</label>
+        <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">View on GitHub</a>
+        <br />
+        <br />
+        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Controller Gamepad</label>
         <select name="gamepadSelection" defaultValue={this.gamePadIndex} onChange={(e) => { this.onChange(e) }}>
           {options}
         </select>
         <br />
-        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem' }}>Max Rotation</label><input name="wheelRotation" type="number" value={this.state.rotation} onChange={(e) => { this.onWheelRotationChange(e) }} />
+        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Max Rotation</label><input name="wheelRotation" type="number" value={this.state.rotation} onChange={(e) => { this.onWheelRotationChange(e) }} />
         <br />
-        <span style={{ color: 'white' }}>Scroll down to re-bind inputs and change images</span>
+        <br />
+        <span style={{ color: 'white' }}><strong>Scroll down</strong> to re-bind inputs and change images</span>
         <br />
         <br />
         <br />
