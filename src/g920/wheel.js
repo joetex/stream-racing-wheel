@@ -1,30 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import flatstore from 'flatstore';
 
 flatstore.set('maxrotation', 900);
-class Wheel extends Component {
 
-    render() {
-        let maxrotation = flatstore.get('maxrotation');
-        let degrees = this.props.currentRotation * (maxrotation / 2);
-        let wheelStyle = {
-            //width: '400px',
-            transform: 'rotate(' + degrees + 'deg)'
-        };
+function Wheel(props) {
 
-        return (
-            <img alt="" style={wheelStyle} src="/stream-racing-wheel/g920/wheel.png" />
-        )
-    }
+    let [imgWheel] = flatstore.useWatch('imgWheel');
+    let [currentRotation] = flatstore.useWatch('valueWheel');
+
+    let maxrotation = flatstore.get('maxrotation');
+    let degrees = currentRotation * (maxrotation / 2);
+    let wheelStyle = {
+        transform: 'rotate(' + degrees + 'deg)'
+    };
+
+    return (
+        <img width="500px" height="500px" alt="" style={wheelStyle} src={imgWheel} />
+    )
+
 }
 
-let onCustomWatched = (ownProps) => {
-    return ['axes-' + ownProps.axis];
-}
-let onCustomProps = (key, value, store, ownProps) => {
-    return {
-        currentRotation: value
-    }
-}
-
-export default flatstore.connect([], onCustomWatched, onCustomProps)(Wheel);
+export default Wheel;
