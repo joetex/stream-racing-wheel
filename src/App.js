@@ -52,7 +52,39 @@ loadSaved('buttonGear6', 17);
 loadSaved('buttonGear7', 11);
 // loadSaved('buttonGear8', 1);
 
+loadSaved('btnWheel_DUp', 12);
+loadSaved('btnWheel_DDown', 13);
+loadSaved('btnWheel_DLeft', 14);
+loadSaved('btnWheel_DRight', 15);
+loadSaved('btnWheel_Back', 8);
+loadSaved('btnWheel_Start', 9);
+loadSaved('btnWheel_X', 2);
+loadSaved('btnWheel_Y', 3);
+loadSaved('btnWheel_A', 0);
+loadSaved('btnWheel_B', 1);
+loadSaved('btnWheel_RSB', 11);
+loadSaved('btnWheel_LSB', 10);
+loadSaved('btnWheel_LB', 4);
+loadSaved('btnWheel_RB', 5);
+
+
 loadSaved('imgWheel', "/stream-racing-wheel/g920/wheel.png");
+
+loadSaved('imgWheel_DUp', "/stream-racing-wheel/g920/DUp.png");
+loadSaved('imgWheel_DDown', "/stream-racing-wheel/g920/DDown.png");
+loadSaved('imgWheel_DLeft', "/stream-racing-wheel/g920/DLeft.png");
+loadSaved('imgWheel_DRight', "/stream-racing-wheel/g920/DRight.png");
+loadSaved('imgWheel_Back', "/stream-racing-wheel/g920/Back.png");
+loadSaved('imgWheel_Start', "/stream-racing-wheel/g920/Start.png");
+loadSaved('imgWheel_X', "/stream-racing-wheel/g920/X.png");
+loadSaved('imgWheel_Y', "/stream-racing-wheel/g920/Y.png");
+loadSaved('imgWheel_A', "/stream-racing-wheel/g920/A.png");
+loadSaved('imgWheel_B', "/stream-racing-wheel/g920/B.png");
+loadSaved('imgWheel_RSB', "/stream-racing-wheel/g920/RSB.png");
+loadSaved('imgWheel_LSB', "/stream-racing-wheel/g920/LSB.png");
+loadSaved('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
+loadSaved('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
+
 loadSaved('imgPedalBase', '/stream-racing-wheel/g920/pedals.png');
 loadSaved('imgGas', '/stream-racing-wheel/g920/gas.png');
 loadSaved('imgBrake', '/stream-racing-wheel/g920/brake.png');
@@ -72,6 +104,22 @@ flatstore.set('valueGear4', 0);
 flatstore.set('valueGear5', 0);
 flatstore.set('valueGear6', 0);
 flatstore.set('valueGear7', 0);
+
+
+flatstore.set('valueWheel_DUp', 0);
+flatstore.set('valueWheel_DDown', 0);
+flatstore.set('valueWheel_DLeft', 0);
+flatstore.set('valueWheel_DRight', 0);
+flatstore.set('valueWheel_Back', 0);
+flatstore.set('valueWheel_Start', 0);
+flatstore.set('valueWheel_X', 0);
+flatstore.set('valueWheel_Y', 0);
+flatstore.set('valueWheel_A', 0);
+flatstore.set('valueWheel_B', 0);
+flatstore.set('valueWheel_RSB', 0);
+flatstore.set('valueWheel_LSB', 0);
+flatstore.set('valueWheel_LB', 0);
+flatstore.set('valueWheel_RB', 0);
 // flatstore.set('valueGear8', 0);
 
 
@@ -91,7 +139,8 @@ class App extends Component {
 
     this.state = {
       gameLoopStarted: false,
-      rotation: 900
+      rotation: 900,
+      wheelButtonsEnabled: 0
     }
 
     this.gameLoop = this.gameLoop.bind(this);
@@ -151,7 +200,33 @@ class App extends Component {
         <br />
         <GamepadSelection onChange={(e) => { this.onChange(e) }} />
         <br />
-        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Max Rotation</label><input name="wheelRotation" type="number" value={this.state.rotation} onChange={(e) => { this.onWheelRotationChange(e) }} />
+        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>
+          Max Rotation
+        </label>
+        <input name="wheelRotation"
+          type="number"
+          value={this.state.rotation}
+          onChange={(e) => {
+            this.onWheelRotationChange(e)
+          }} />
+        <br />
+        <label style={{ color: 'white', display: 'inline-block', paddingTop: '0.5rem', paddingRight: '1rem', fontWeight: 'bold' }}>
+          Show Wheel Button Presses
+        </label>
+        <select name="wheelButtonsEnabled"
+          type="number"
+          value={this.state.wheelButtonsEnabled}
+          onChange={(e) => {
+            // this.onWheelRotationChange(e)
+
+            let wheelButtonsEnabled = Number.parseInt(e.target.value);
+            flatstore.set('wheelButtonsEnabled', wheelButtonsEnabled);
+            this.setState({ wheelButtonsEnabled })
+
+          }}>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
         <br />
         <br />
         <span style={{ color: 'white' }}><strong>Scroll down</strong> to re-bind inputs and change images</span>
@@ -224,6 +299,23 @@ class App extends Component {
     let buttonGear5 = flatstore.get('buttonGear5');
     let buttonGear6 = flatstore.get('buttonGear6');
     let buttonGear7 = flatstore.get('buttonGear7');
+
+    let btnWheel_DUp = flatstore.get('btnWheel_DUp');
+    let btnWheel_DDown = flatstore.get('btnWheel_DDown');
+    let btnWheel_DLeft = flatstore.get('btnWheel_DLeft');
+    let btnWheel_DRight = flatstore.get('btnWheel_DRight');
+    let btnWheel_Back = flatstore.get('btnWheel_Back');
+    let btnWheel_Start = flatstore.get('btnWheel_Start');
+    let btnWheel_X = flatstore.get('btnWheel_X');
+    let btnWheel_Y = flatstore.get('btnWheel_Y');
+    let btnWheel_A = flatstore.get('btnWheel_A');
+    let btnWheel_B = flatstore.get('btnWheel_B');
+    let btnWheel_RSB = flatstore.get('btnWheel_RSB');
+    let btnWheel_LSB = flatstore.get('btnWheel_LSB');
+    let btnWheel_LB = flatstore.get('btnWheel_LB');
+    let btnWheel_RB = flatstore.get('btnWheel_RB');
+
+
     // let buttonGear8 = flatstore.get('buttonGear8');
 
     if (axisWheel != null)
@@ -254,6 +346,38 @@ class App extends Component {
       flatstore.set('valueGear6', buttonStates[buttonGear6]?.pressed);
     if (buttonGear7 != null)
       flatstore.set('valueGear7', buttonStates[buttonGear7]?.pressed);
+
+
+
+    if (btnWheel_DUp != null)
+      flatstore.set('valueWheel_DUp', buttonStates[btnWheel_DUp]?.pressed);
+    if (btnWheel_DDown != null)
+      flatstore.set('valueWheel_DDown', buttonStates[btnWheel_DDown]?.pressed);
+    if (btnWheel_DLeft != null)
+      flatstore.set('valueWheel_DLeft', buttonStates[btnWheel_DLeft]?.pressed);
+    if (btnWheel_DRight != null)
+      flatstore.set('valueWheel_DRight', buttonStates[btnWheel_DRight]?.pressed);
+    if (btnWheel_Back != null)
+      flatstore.set('valueWheel_Back', buttonStates[btnWheel_Back]?.pressed);
+    if (btnWheel_Start != null)
+      flatstore.set('valueWheel_Start', buttonStates[btnWheel_Start]?.pressed);
+    if (btnWheel_X != null)
+      flatstore.set('valueWheel_X', buttonStates[btnWheel_X]?.pressed);
+    if (btnWheel_Y != null)
+      flatstore.set('valueWheel_Y', buttonStates[btnWheel_Y]?.pressed);
+    if (btnWheel_A != null)
+      flatstore.set('valueWheel_A', buttonStates[btnWheel_A]?.pressed);
+    if (btnWheel_B != null)
+      flatstore.set('valueWheel_B', buttonStates[btnWheel_B]?.pressed);
+    if (btnWheel_RSB != null)
+      flatstore.set('valueWheel_RSB', buttonStates[btnWheel_RSB]?.pressed);
+    if (btnWheel_LSB != null)
+      flatstore.set('valueWheel_LSB', buttonStates[btnWheel_LSB]?.pressed);
+    if (btnWheel_LB != null)
+      flatstore.set('valueWheel_LB', buttonStates[btnWheel_LB]?.pressed);
+    if (btnWheel_RB != null)
+      flatstore.set('valueWheel_RB', buttonStates[btnWheel_RB]?.pressed);
+
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);
 
