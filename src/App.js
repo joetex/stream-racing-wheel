@@ -143,6 +143,8 @@ class App extends Component {
       wheelButtonsEnabled: 1
     }
 
+    flatstore.set('wheelButtonsEnabled', 1);
+
     this.gameLoop = this.gameLoop.bind(this);
     this.onGamepadConnected = this.onGamepadConnected.bind(this);
     window.addEventListener("gamepadconnected", this.onGamepadConnected);
