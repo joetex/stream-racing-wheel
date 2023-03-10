@@ -7,9 +7,10 @@ function Wheel(props) {
 
     let [imgWheel] = flatstore.useWatch('imgWheel');
     let [currentRotation] = flatstore.useWatch('valueWheel');
+    let [invert] = flatstore.useWatch("invert/valueWheel");
 
     let maxrotation = flatstore.get('maxrotation');
-    let degrees = currentRotation * (maxrotation / 2);
+    let degrees = currentRotation * (maxrotation / 2) * (invert ? -1 : 1);
     let wheelStyle = {
         transform: 'rotate(' + degrees + 'deg)'
     };

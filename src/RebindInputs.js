@@ -97,10 +97,10 @@ function RebindInputs(props) {
             <div style={{ paddingBottom: '1rem' }}>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Wheel and Pedal Binding</h3>
 
-                <InputBind title="Wheel" id="axisWheel" options={axisOptions} />
-                <InputBind title="Gas" id="axisGas" options={axisOptions} />
-                <InputBind title="Break" id="axisBrake" options={axisOptions} />
-                <InputBind title="Clutch" id="axisClutch" options={axisOptions} />
+                <InputBind title="Wheel" id="axisWheel" options={axisOptions} allowInvert={true} invertId={'valueWheel'} />
+                <InputBind title="Gas" id="axisGas" options={axisOptions} allowInvert={true} invertId={'valueGas'} />
+                <InputBind title="Break" id="axisBrake" options={axisOptions} allowInvert={true} invertId={'valueBrake'} />
+                <InputBind title="Clutch" id="axisClutch" options={axisOptions} allowInvert={true} invertId={'valueClutch'} />
 
                 {/* <InputBind title="Gear 8" id="buttonGear8" options={buttonOptions} /> */}
 
@@ -224,6 +224,14 @@ function ImageBind(props) {
 
 function InputBind(props) {
 
+    let invertId = props.invertId || '';
+
+    let defaultValue = localStorage.getItem(props.id) || flatstore.get(props.id);
+    let defaultChecked = localStorage.getItem('invert/' + invertId) || flatstore.get('invert/' + invertId);
+
+    defaultValue = Number.parseInt(defaultValue);
+    defaultChecked = (defaultChecked == 'false' || !defaultChecked) ? false : true;
+
     return (
         <div style={{ display: 'inline-block', paddingLeft: '1rem' }}>
             <label style={{ fontWeight: 'bold', color: '#eee', paddingRight: '0.5rem', height: '2rem', display: 'inline-block' }}>
@@ -232,7 +240,7 @@ function InputBind(props) {
             <select
                 style={{ height: '2rem', width: '100px', color: 'white', backgroundColor: "rgb(34, 34, 34)", borderColor: "rgb(34, 34, 34)" }}
                 name={props.id}
-                defaultValue={flatstore.get(props.id)}
+                defaultValue={defaultValue}
                 onChange={(e) => {
                     flatstore.set(props.id, Number.parseInt(e.target.value))
                     localStorage.setItem(props.id, e.target.value);
@@ -240,7 +248,21 @@ function InputBind(props) {
             >
                 {props.options}
             </select>
+            <br />
+            {props.allowInvert && (
+                <>
+                    <span style={{ color: 'white', fontSize: '0.8rem', marginRight: '0.8rem' }}>Invert?</span>
+                    <label className="switch">
 
+                        <input type="checkbox" defaultChecked={defaultChecked} onChange={(e) => {
+                            flatstore.set('invert/' + invertId, e.target.checked);
+                            localStorage.setItem('invert/' + invertId, e.target.checked);
+                        }} />
+                        <span className="slider round"></span>
+                    </label>
+                </>
+
+            )}
         </div>
     )
 }

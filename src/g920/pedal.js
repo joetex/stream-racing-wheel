@@ -4,8 +4,9 @@ import flatstore from 'flatstore';
 function Pedal(props) {
 
     let [axisValue] = flatstore.useWatch(props.id);
+    let [invert] = flatstore.useWatch('invert/' + props.id);
 
-    let currentPos = props.downAmount * axisValue * -1;
+    let currentPos = props.downAmount * axisValue * (invert ? 1 : -1);
 
     let wheelStyle = {
         width: '70px',
