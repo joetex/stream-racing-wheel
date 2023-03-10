@@ -3,6 +3,9 @@
 Don't have 3 cameras to be showing wheel and pedals? This react application lets you connect to your G920 Racing Wheel or any steering wheel gamepad and show a visual representation of the controls as an overlay.
 
 ### Change Log
+>**March 10, 2023**
+>Added Invert toggle configuration for Wheel and Pedals
+
 >**September 16, 2022**
 >Wheel Button Presses are now visible through a button mask that can be customized.
 
