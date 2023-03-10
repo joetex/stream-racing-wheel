@@ -140,7 +140,7 @@ class App extends Component {
     this.state = {
       gameLoopStarted: false,
       rotation: 900,
-      wheelButtonsEnabled: 0
+      wheelButtonsEnabled: 1
     }
 
     this.gameLoop = this.gameLoop.bind(this);
