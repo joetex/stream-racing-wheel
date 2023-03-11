@@ -2,7 +2,7 @@
 
 Don't have 3 cameras to be showing wheel and pedals? This react application lets you connect to your G920 Racing Wheel or any steering wheel gamepad and show a visual representation of the controls as an overlay.
 
-`**Every image is customizable with a URL from the web, to create any appearance you want.**`
+`**Every image is customizable with a URL from the web.  Create any appearance you want.**`
 
 ### Change Log
 >**March 10, 2023**
@@ -37,6 +37,9 @@ https://user-images.githubusercontent.com/1610876/224411440-c15f0a53-c205-42a8-a
 
 
 ### Install and use locally
+
+Requirements:
+- Node v18
 
 #### `npm install`
 
