@@ -139,31 +139,31 @@ function RebindInputs(props) {
             </div>
             <div>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Change Images</h3>
-                <h5 style={{ fontWeight: 'light', color: 'white', padding: '0', paddingBottom: '1rem' }}>Enter an image URL to replace the existing image</h5>
-                <ImageBind title="Wheel" id="imgWheel" />
-                <ImageBind title="Pedal Base" id="imgPedalBase" />
-                <ImageBind title="Gas Pedal" id="imgGas" />
-                <ImageBind title="Brake Pedal" id="imgBrake" />
-                <ImageBind title="Clutch Petal" id="imgClutch" />
-                <ImageBind title="Shifter Base" id="imgShifterBase" />
-                <ImageBind title="Shifter Head" id="imgShifter" />
+                <h5 style={{ fontWeight: 'light', color: 'white', padding: '0', paddingBottom: '1rem' }}>Enter an image URL to replace the existing image.  Images will be forced to the pixel ratios below.</h5>
+                <ImageBind title="Wheel" id="imgWheel" width="500" height="500" />
+                <ImageBind title="Pedal Base" id="imgPedalBase" width="400" height="238" />
+                <ImageBind title="Gas Pedal" id="imgGas" width="70" height="121" />
+                <ImageBind title="Brake Pedal" id="imgBrake" width="70" height="96" />
+                <ImageBind title="Clutch Petal" id="imgClutch" width="70" height="96" />
+                <ImageBind title="Shifter Base" id="imgShifterBase" width="250" height="293" />
+                <ImageBind title="Shifter Head" id="imgShifter" width="150" height="150" />
 
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Change Wheel Button Masks</h3>
-                <ImageBind title="D-Up" id="imgWheel_DUp" />
-                <ImageBind title="D-Down" id="imgWheel_DDown" />
-                <ImageBind title="D-Left" id="imgWheel_DLeft" />
-                <ImageBind title="D-Right" id="imgWheel_DRight" />
-                <ImageBind title="Back" id="imgWheel_Back" />
-                <ImageBind title="Start" id="imgWheel_Start" />
+                <ImageBind title="D-Up" id="imgWheel_DUp" width="500" height="500" />
+                <ImageBind title="D-Down" id="imgWheel_DDown" width="500" height="500" />
+                <ImageBind title="D-Left" id="imgWheel_DLeft" width="500" height="500" />
+                <ImageBind title="D-Right" id="imgWheel_DRight" width="500" height="500" />
+                <ImageBind title="Back" id="imgWheel_Back" width="500" height="500" />
+                <ImageBind title="Start" id="imgWheel_Start" width="500" height="500" />
 
-                <ImageBind title="X" id="imgWheel_X" />
-                <ImageBind title="Y" id="imgWheel_Y" />
-                <ImageBind title="A" id="imgWheel_A" />
-                <ImageBind title="B" id="imgWheel_B" />
-                <ImageBind title="RSB" id="imgWheel_RSB" />
-                <ImageBind title="LSB" id="imgWheel_LSB" />
-                <ImageBind title="LB" id="imgWheel_LB" />
-                <ImageBind title="RB" id="imgWheel_RB" />
+                <ImageBind title="X" id="imgWheel_X" width="500" height="500" />
+                <ImageBind title="Y" id="imgWheel_Y" width="500" height="500" />
+                <ImageBind title="A" id="imgWheel_A" width="500" height="500" />
+                <ImageBind title="B" id="imgWheel_B" width="500" height="500" />
+                <ImageBind title="RSB" id="imgWheel_RSB" width="500" height="500" />
+                <ImageBind title="LSB" id="imgWheel_LSB" width="500" height="500" />
+                <ImageBind title="LB" id="imgWheel_LB" width="500" height="500" />
+                <ImageBind title="RB" id="imgWheel_RB" width="500" height="500" />
 
 
                 <button
@@ -193,7 +193,7 @@ function RebindInputs(props) {
                         updateImage('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
                     }}>Reset to Default</button>
             </div>
-        </div>
+        </div >
     )
 
 }
@@ -201,23 +201,25 @@ function RebindInputs(props) {
 
 */
 
-function ImageBind(props) {
+function ImageBind({ id, title, width, height }) {
 
     return (
         <div style={{ display: 'block', paddingLeft: '1rem', paddingBottom: '0.5rem' }}>
 
             <label style={{ fontWeight: 'light', color: 'white', paddingRight: '0.5rem', width: '150px', height: '2rem', display: 'inline-block' }}>
-                {props.title}
+                {title}
             </label>
             <input
-                name={props.id}
+                name={id}
                 type="text"
-                value={flatstore.get(props.id)}
+                value={flatstore.get(id)}
                 onChange={(e) => {
-                    flatstore.set(props.id, e.target.value);
+                    flatstore.set(id, e.target.value);
+                    localStorage.setItem(id, e.target.value);
                 }}
                 style={{ height: '2rem', width: '400px' }}
             />
+            <span style={{ paddingLeft: '10px', color: 'white', fontSize: '12px' }}>{width || 0}x{height || 0} pixels</span>
         </div>
     )
 }
