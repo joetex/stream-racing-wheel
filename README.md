@@ -5,6 +5,9 @@ Don't have 3 cameras to be showing wheel and pedals? This react application lets
 `**Every image is customizable with a URL from the web.  Create any appearance you want.**`
 
 ### Change Log
+>**November 26, 2023**
+>All images URLs now saved into localStorage to avoid having to reenter each time.
+
 >**March 10, 2023**
 >Added Invert toggle configuration for Wheel and Pedals
 
