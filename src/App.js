@@ -66,7 +66,8 @@ loadSaved('btnWheel_RSB', 11);
 loadSaved('btnWheel_LSB', 10);
 loadSaved('btnWheel_LB', 4);
 loadSaved('btnWheel_RB', 5);
-
+loadSaved('btnWheel_L3', 4);
+loadSaved('btnWheel_R3', 5);
 
 loadSaved('imgWheel', "/stream-racing-wheel/g920/wheel.png");
 
@@ -84,6 +85,8 @@ loadSaved('imgWheel_RSB', "/stream-racing-wheel/g920/RSB.png");
 loadSaved('imgWheel_LSB', "/stream-racing-wheel/g920/LSB.png");
 loadSaved('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
 loadSaved('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
+loadSaved('imgWheel_L3', "/stream-racing-wheel/g920/LB.png");
+loadSaved('imgWheel_R3', "/stream-racing-wheel/g920/RB.png");
 
 loadSaved('imgPedalBase', '/stream-racing-wheel/g920/pedals.png');
 loadSaved('imgGas', '/stream-racing-wheel/g920/gas.png');
@@ -316,7 +319,8 @@ class App extends Component {
     let btnWheel_LSB = flatstore.get('btnWheel_LSB');
     let btnWheel_LB = flatstore.get('btnWheel_LB');
     let btnWheel_RB = flatstore.get('btnWheel_RB');
-
+    let btnWheel_L3 = flatstore.get('btnWheel_L3');
+    let btnWheel_R3 = flatstore.get('btnWheel_R3');
 
     // let buttonGear8 = flatstore.get('buttonGear8');
 
@@ -379,6 +383,10 @@ class App extends Component {
       flatstore.set('valueWheel_LB', buttonStates[btnWheel_LB]?.pressed);
     if (btnWheel_RB != null)
       flatstore.set('valueWheel_RB', buttonStates[btnWheel_RB]?.pressed);
+    if (btnWheel_L3 != null)
+      flatstore.set('valueWheel_L3', buttonStates[btnWheel_L3]?.pressed);
+    if (btnWheel_R3 != null)
+      flatstore.set('valueWheel_R3', buttonStates[btnWheel_R3]?.pressed);
 
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);

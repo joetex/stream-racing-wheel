@@ -136,6 +136,8 @@ function RebindInputs(props) {
                 <InputBind title="LSB" id="btnWheel_LSB" options={buttonOptions} />
                 <InputBind title="LB" id="btnWheel_LB" options={buttonOptions} />
                 <InputBind title="RB" id="btnWheel_RB" options={buttonOptions} />
+                <InputBind title="L3" id="btnWheel_L3" options={buttonOptions} />
+                <InputBind title="R3" id="btnWheel_R3" options={buttonOptions} />
             </div>
             <div>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Change Images</h3>
@@ -164,6 +166,8 @@ function RebindInputs(props) {
                 <ImageBind title="LSB" id="imgWheel_LSB" width="500" height="500" />
                 <ImageBind title="LB" id="imgWheel_LB" width="500" height="500" />
                 <ImageBind title="RB" id="imgWheel_RB" width="500" height="500" />
+                <ImageBind title="L3" id="imgWheel_L3" width="500" height="500" />
+                <ImageBind title="R3" id="imgWheel_R3" width="500" height="500" />
 
 
                 <button
@@ -191,6 +195,8 @@ function RebindInputs(props) {
                         updateImage('imgWheel_LSB', "/stream-racing-wheel/g920/LSB.png");
                         updateImage('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
                         updateImage('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
+                        updateImage('imgWheel_L3', "/stream-racing-wheel/g920/LB.png");
+                        updateImage('imgWheel_R3', "/stream-racing-wheel/g920/RB.png");
                     }}>Reset to Default</button>
             </div>
         </div >
