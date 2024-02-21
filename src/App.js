@@ -68,6 +68,8 @@ loadSaved('btnWheel_LB', 4);
 loadSaved('btnWheel_RB', 5);
 loadSaved('btnWheel_L3', 4);
 loadSaved('btnWheel_R3', 5);
+loadSaved('btnWheel_L4', 4);
+loadSaved('btnWheel_R4', 5);
 
 loadSaved('imgWheel', "/stream-racing-wheel/g920/wheel.png");
 
@@ -87,6 +89,8 @@ loadSaved('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
 loadSaved('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
 loadSaved('imgWheel_L3', "/stream-racing-wheel/g920/LB.png");
 loadSaved('imgWheel_R3', "/stream-racing-wheel/g920/RB.png");
+loadSaved('imgWheel_L4', "/stream-racing-wheel/g920/LB.png");
+loadSaved('imgWheel_R4', "/stream-racing-wheel/g920/RB.png");
 
 loadSaved('imgPedalBase', '/stream-racing-wheel/g920/pedals.png');
 loadSaved('imgGas', '/stream-racing-wheel/g920/gas.png');
@@ -123,6 +127,10 @@ flatstore.set('valueWheel_RSB', 0);
 flatstore.set('valueWheel_LSB', 0);
 flatstore.set('valueWheel_LB', 0);
 flatstore.set('valueWheel_RB', 0);
+flatstore.set('valueWheel_L3', 0);
+flatstore.set('valueWheel_R3', 0);
+flatstore.set('valueWheel_L4', 0);
+flatstore.set('valueWheel_R4', 0);
 // flatstore.set('valueGear8', 0);
 
 
@@ -321,6 +329,8 @@ class App extends Component {
     let btnWheel_RB = flatstore.get('btnWheel_RB');
     let btnWheel_L3 = flatstore.get('btnWheel_L3');
     let btnWheel_R3 = flatstore.get('btnWheel_R3');
+    let btnWheel_L4 = flatstore.get('btnWheel_L4');
+    let btnWheel_R4 = flatstore.get('btnWheel_R4');
 
     // let buttonGear8 = flatstore.get('buttonGear8');
 
@@ -387,6 +397,10 @@ class App extends Component {
       flatstore.set('valueWheel_L3', buttonStates[btnWheel_L3]?.pressed);
     if (btnWheel_R3 != null)
       flatstore.set('valueWheel_R3', buttonStates[btnWheel_R3]?.pressed);
+    if (btnWheel_L4 != null)
+      flatstore.set('valueWheel_L4', buttonStates[btnWheel_L4]?.pressed);
+    if (btnWheel_R4 != null)
+      flatstore.set('valueWheel_R4', buttonStates[btnWheel_R4]?.pressed);
 
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);
