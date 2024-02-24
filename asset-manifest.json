@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/stream-racing-wheel/static/css/main.11f45adc.css",
-    "main.js": "/stream-racing-wheel/static/js/main.0e748a4b.js",
+    "main.css": "/stream-racing-wheel/static/css/main.7158c1b6.css",
+    "main.js": "/stream-racing-wheel/static/js/main.761c5401.js",
     "index.html": "/stream-racing-wheel/index.html",
-    "main.11f45adc.css.map": "/stream-racing-wheel/static/css/main.11f45adc.css.map",
-    "main.0e748a4b.js.map": "/stream-racing-wheel/static/js/main.0e748a4b.js.map"
+    "main.7158c1b6.css.map": "/stream-racing-wheel/static/css/main.7158c1b6.css.map",
+    "main.761c5401.js.map": "/stream-racing-wheel/static/js/main.761c5401.js.map"
   },
   "entrypoints": [
-    "static/css/main.11f45adc.css",
-    "static/js/main.0e748a4b.js"
+    "static/css/main.7158c1b6.css",
+    "static/js/main.761c5401.js"
   ]
 }
