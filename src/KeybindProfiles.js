@@ -106,7 +106,7 @@ export function ProfileLoader({ }) {
 
   return (<div>
     <label htmlFor="profileLoader" style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', display: 'block' }}>Load Keybind Profile</label>
-    <select name="profileLoader" id="profileLoader" value={defaultProfile} onChange={(e) => {
+    <select name="profileLoader" id="profileLoader" value={isCreate ? '*' : defaultProfile} onChange={(e) => {
       let profileName = e.target.value;
       if (profileName == '*') {
         let currentProfile = getCurrentProfile();
