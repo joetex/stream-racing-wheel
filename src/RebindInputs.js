@@ -1,106 +1,146 @@
 import React from 'react';
 import flatstore from 'flatstore';
+import { ProfileLoader, getDefaultProfile, loadDefaultProfile, loadProfile } from './KeybindProfiles';
 
-function RebindInputs(props) {
 
-    let [gamepad] = flatstore.useWatch('gamePad')
-    let [axes] = flatstore.useWatch('axes');
-    let [buttons] = flatstore.useWatch('buttons');
+function PreviewButtons({ }) {
+
+    // let [axes] = flatstore.useWatch('axes');
+    // let [buttons] = flatstore.useWatch('buttons');
+    let [actionStates] = flatstore.useWatch('actionStates');
+
+
+    let actionOptions = [];
 
     let axisOptions = [];
     let buttonOptions = [];
     let displayAxes = [];
     let displayButtons = [];
 
-    if (!gamepad || !axes || !buttons)
+    if (!actionOptions)
         return <></>
 
-    for (let id = 0; id < axes.length; id++) {
-        let axisValue = Number.parseFloat(axes[id]);
-        let pct = ((axisValue + 1.0) / 2.0) * 100;
-        pct = Math.min(pct, 100);
-        axisValue = axisValue.toFixed(3)
-        displayAxes.push(
-            <span
-                style={{
-                    padding: '0.5rem',
-                    width: '50px',
-                    height: '2rem',
-                    margin: '0.5rem',
-                    backgroundColor: 'black',
-                    color: 'white',
-                    position: 'relative',
-                    display: 'inline-block',
-                    textAlign: 'center'
-                }}
-                key={"displayAxes-" + id}>
+    for (let x = 0; x < actionStates.length; x++) {
+
+        let action = actionStates[x];
+        let { type, id, index, pressed, value } = action;
+
+        if (Math.abs(value) > 0 && value < 1) {
+            value = value.toFixed(2);
+        }
+
+        if (type == 'Button') {
+            displayButtons.push(
+                <span
+                    key={"displayButtons-" + id}
+                    style={{
+                        display: 'inline-block',
+                        position: 'relative',
+                        textAlign: 'center',
+                        borderRadius: '50%',
+                        width: '2.5rem',
+                        height: '2.5rem',
+                        padding: '0.5rem',
+                        margin: '0.2rem',
+
+                        backgroundColor: '#222',
+                    }}>
+                    <span style={{
+                        backgroundColor: '#222',
+                        position: 'absolute',
+                        top: 0, left: 0,
+                        borderRadius: '50%',
+                        width: '2.5rem',
+                        height: '2.5rem',
+                        padding: '0.5rem',
+                        width: '100%',
+                        height: '100%',
+                        color: (!pressed ? 'white' : 'black'),
+                        backgroundColor: (!pressed ? '#222' : `rgba(255,255,255,${Math.abs(value) * 1})`),
+                    }}>
+                        {id}</span>
+                    {/* <span style={{ fontSize: '8px', position: 'absolute', bottom: '4px', left: '25%' }}>{value}</span> */}
+                </span>
+            )
+            actionOptions.push(<option key={"optionButtons-" + index} value={index}>Button {id}</option>)
+        } else if (type == 'Axis') {
+            let axisValue = Number.parseFloat(value);
+            let pct = ((axisValue + 1.0) / 2.0) * 100;
+            pct = Math.min(pct, 100);
+            axisValue = axisValue.toFixed(3)
+            displayAxes.push(
                 <span
                     style={{
-                        width: (pct + '%'),
-                        height: '0.4rem',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        transition: 'width 0.05s linear',
-                        backgroundColor: 'white'
+                        padding: '0.5rem',
+                        width: '50px',
+                        height: '2rem',
+                        margin: '0.5rem',
+                        backgroundColor: 'black',
+                        color: 'white',
+                        position: 'relative',
+                        display: 'inline-block',
+                        textAlign: 'center'
                     }}
-                >
+                    key={"displayAxes-" + id}>
+                    <span
+                        style={{
+                            width: (pct + '%'),
+                            height: '0.4rem',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            transition: 'width 0.05s linear',
+                            backgroundColor: `rgba(255,255,255,255)`
+                        }}
+                    >
 
+                    </span>
+                    {id}
                 </span>
-                {id}
-            </span>
-        )
-        axisOptions.push(<option key={"optionAxes-" + id} value={id}>Axis {id}</option>)
+            )
+
+            actionOptions.push(<option key={"optionAxes-" + index} value={index}>Axis {id}</option>)
+        }
     }
 
-    for (let id = 0; id < gamepad.buttons.length; id++) {
-        let btn = buttons[id];
-        displayButtons.push(
-            <span
-                key={"displayButtons-" + id}
-                style={{
-                    display: 'inline-block',
-                    textAlign: 'center',
-                    borderRadius: '50%',
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    padding: '0.5rem',
-                    margin: '0.2rem',
-                    color: (!btn?.pressed ? 'white' : 'black'),
-                    backgroundColor: (!btn?.pressed ? '#222' : 'white')
-                }}>
-                {id}
-            </span>
-        )
-        buttonOptions.push(<option key={"optionButtons-" + id} value={id}>Button {id}</option>)
-    }
+    return (<>
+        <div id="displayAxes" style={{ width: '100%', }}>
+            <h3 style={{ color: 'white', padding: '1rem 0' }}>Axes IDs</h3>
+            {displayAxes}
+        </div>
+        <div id="displayButtons" style={{ width: '100%', paddingBottom: '1rem' }}>
+            <h3 style={{ color: 'white', padding: '1rem 0' }}>Button IDs</h3>
+            {displayButtons}
+        </div>
+    </>)
+}
 
-    const updateImage = (key, value) => {
-        flatstore.set(key, value);
-        localStorage.setItem(key, value);
-    }
+
+function RebindInputs(props) {
+
+    let [gamepad] = flatstore.useWatch('gamePad')
+
+    if (!gamepad)
+        return <></>
 
     return (
         <div style={{ paddingBottom: '3rem' }}>
+
+
+            <ProfileLoader />
+            <br />
             <p style={{ color: 'white' }}>
                 Press and move your controller inputs to identify the ID needed to map the input to the correct binding.
             </p>
-            <div id="displayAxes" style={{ width: '100%', }}>
-                <h3 style={{ color: 'white', padding: '1rem 0' }}>Axes IDs</h3>
-                {displayAxes}
-            </div>
-            <div id="displayButtons" style={{ width: '100%', paddingBottom: '1rem' }}>
-                <h3 style={{ color: 'white', padding: '1rem 0' }}>Button IDs</h3>
-                {displayButtons}
-            </div>
 
+            <PreviewButtons />
             <div style={{ paddingBottom: '1rem' }}>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Wheel and Pedal Binding</h3>
 
-                <InputBind title="Wheel" id="axisWheel" options={axisOptions} allowInvert={true} invertId={'valueWheel'} />
-                <InputBind title="Gas" id="axisGas" options={axisOptions} allowInvert={true} invertId={'valueGas'} />
-                <InputBind title="Break" id="axisBrake" options={axisOptions} allowInvert={true} invertId={'valueBrake'} />
-                <InputBind title="Clutch" id="axisClutch" options={axisOptions} allowInvert={true} invertId={'valueClutch'} />
+                <InputBind title="Wheel" id="btnWheel" allowInvert={true} invertId={'valueWheel'} />
+                <InputBind title="Gas" id="btnGas" allowInvert={true} invertId={'valueGas'} />
+                <InputBind title="Break" id="btnBrake" allowInvert={true} invertId={'valueBrake'} />
+                <InputBind title="Clutch" id="btnClutch" allowInvert={true} invertId={'valueClutch'} />
 
                 {/* <InputBind title="Gear 8" id="buttonGear8" options={buttonOptions} /> */}
 
@@ -109,37 +149,37 @@ function RebindInputs(props) {
             </div>
             <div style={{ paddingBottom: '1rem' }}>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Gear Binding</h3>
-                <InputBind title="Gear Reverse" id="buttonGearReverse" options={buttonOptions} />
-                <InputBind title="Gear 1" id="buttonGear1" options={buttonOptions} />
-                <InputBind title="Gear 2" id="buttonGear2" options={buttonOptions} />
-                <InputBind title="Gear 3" id="buttonGear3" options={buttonOptions} />
-                <InputBind title="Gear 4" id="buttonGear4" options={buttonOptions} />
-                <InputBind title="Gear 5" id="buttonGear5" options={buttonOptions} />
-                <InputBind title="Gear 6" id="buttonGear6" options={buttonOptions} />
-                <InputBind title="Gear 7" id="buttonGear7" options={buttonOptions} />
+                <InputBind title="Gear Reverse" id="btnGearReverse" allowInvert={true} invertId={'valueGearReverse'} />
+                <InputBind title="Gear 1" id="btnGear1" allowInvert={true} invertId={'valueGear1'} />
+                <InputBind title="Gear 2" id="btnGear2" allowInvert={true} invertId={'valueGear2'} />
+                <InputBind title="Gear 3" id="btnGear3" allowInvert={true} invertId={'valueGear3'} />
+                <InputBind title="Gear 4" id="btnGear4" allowInvert={true} invertId={'valueGear4'} />
+                <InputBind title="Gear 5" id="btnGear5" allowInvert={true} invertId={'valueGear5'} />
+                <InputBind title="Gear 6" id="btnGear6" allowInvert={true} invertId={'valueGear6'} />
+                <InputBind title="Gear 7" id="btnGear7" allowInvert={true} invertId={'valueGear7'} />
             </div>
 
             <div style={{ paddingBottom: '1rem' }}>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Wheel Button Binding</h3>
-                <InputBind title="D-Up" id="btnWheel_DUp" options={buttonOptions} />
-                <InputBind title="D-Down" id="btnWheel_DDown" options={buttonOptions} />
-                <InputBind title="D-Left" id="btnWheel_DLeft" options={buttonOptions} />
-                <InputBind title="D-Right" id="btnWheel_DRight" options={buttonOptions} />
-                <InputBind title="Back" id="btnWheel_Back" options={buttonOptions} />
-                <InputBind title="Start" id="btnWheel_Start" options={buttonOptions} />
+                <InputBind title="D-Up" id="btnWheel_DUp" />
+                <InputBind title="D-Down" id="btnWheel_DDown" />
+                <InputBind title="D-Left" id="btnWheel_DLeft" />
+                <InputBind title="D-Right" id="btnWheel_DRight" />
+                <InputBind title="Back" id="btnWheel_Back" />
+                <InputBind title="Start" id="btnWheel_Start" />
                 <br />
-                <InputBind title="X" id="btnWheel_X" options={buttonOptions} />
-                <InputBind title="Y" id="btnWheel_Y" options={buttonOptions} />
-                <InputBind title="A" id="btnWheel_A" options={buttonOptions} />
-                <InputBind title="B" id="btnWheel_B" options={buttonOptions} />
-                <InputBind title="RSB" id="btnWheel_RSB" options={buttonOptions} />
-                <InputBind title="LSB" id="btnWheel_LSB" options={buttonOptions} />
-                <InputBind title="LB" id="btnWheel_LB" options={buttonOptions} />
-                <InputBind title="RB" id="btnWheel_RB" options={buttonOptions} />
-                <InputBind title="L3" id="btnWheel_L3" options={buttonOptions} />
-                <InputBind title="R3" id="btnWheel_R3" options={buttonOptions} />
-                <InputBind title="L4" id="btnWheel_L4" options={buttonOptions} />
-                <InputBind title="R4" id="btnWheel_R4" options={buttonOptions} />
+                <InputBind title="X" id="btnWheel_X" />
+                <InputBind title="Y" id="btnWheel_Y" />
+                <InputBind title="A" id="btnWheel_A" />
+                <InputBind title="B" id="btnWheel_B" />
+                <InputBind title="RSB" id="btnWheel_RSB" />
+                <InputBind title="LSB" id="btnWheel_LSB" />
+                <InputBind title="LB" id="btnWheel_LB" />
+                <InputBind title="RB" id="btnWheel_RB" />
+                <InputBind title="L3" id="btnWheel_L3" />
+                <InputBind title="R3" id="btnWheel_R3" />
+                <InputBind title="L4" id="btnWheel_L4" />
+                <InputBind title="R4" id="btnWheel_R4" />
             </div>
             <div>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Change Images</h3>
@@ -174,36 +214,11 @@ function RebindInputs(props) {
                 <ImageBind title="R4" id="imgWheel_R4" width="500" height="500" />
 
 
-                <button
+                {/* <button
                     className="resetButton"
                     onClick={() => {
-                        updateImage('imgWheel', "/stream-racing-wheel/g920/wheel.png");
-                        updateImage('imgPedalBase', '/stream-racing-wheel/g920/pedals.png');
-                        updateImage('imgGas', '/stream-racing-wheel/g920/gas.png');
-                        updateImage('imgBrake', '/stream-racing-wheel/g920/brake.png');
-                        updateImage('imgClutch', '/stream-racing-wheel/g920/clutch.png');
-                        updateImage('imgShifterBase', '/stream-racing-wheel/g920/shifter-base.png');
-                        updateImage('imgShifter', '/stream-racing-wheel/g920/shifter.png');
-
-                        updateImage('imgWheel_DUp', "/stream-racing-wheel/g920/DUp.png");
-                        updateImage('imgWheel_DDown', "/stream-racing-wheel/g920/DDown.png");
-                        updateImage('imgWheel_DLeft', "/stream-racing-wheel/g920/DLeft.png");
-                        updateImage('imgWheel_DRight', "/stream-racing-wheel/g920/DRight.png");
-                        updateImage('imgWheel_Back', "/stream-racing-wheel/g920/Back.png");
-                        updateImage('imgWheel_Start', "/stream-racing-wheel/g920/Start.png");
-                        updateImage('imgWheel_X', "/stream-racing-wheel/g920/X.png");
-                        updateImage('imgWheel_Y', "/stream-racing-wheel/g920/Y.png");
-                        updateImage('imgWheel_A', "/stream-racing-wheel/g920/A.png");
-                        updateImage('imgWheel_B', "/stream-racing-wheel/g920/B.png");
-                        updateImage('imgWheel_RSB', "/stream-racing-wheel/g920/RSB.png");
-                        updateImage('imgWheel_LSB', "/stream-racing-wheel/g920/LSB.png");
-                        updateImage('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
-                        updateImage('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
-                        updateImage('imgWheel_L3', "/stream-racing-wheel/g920/LB.png");
-                        updateImage('imgWheel_R3', "/stream-racing-wheel/g920/RB.png");
-                        updateImage('imgWheel_L4', "/stream-racing-wheel/g920/LB.png");
-                        updateImage('imgWheel_R4', "/stream-racing-wheel/g920/RB.png");
-                    }}>Reset to Default</button>
+                        loadDefaultProfile();
+                    }}>Reset to Default</button> */}
             </div>
         </div >
     )
@@ -215,6 +230,7 @@ function RebindInputs(props) {
 
 function ImageBind({ id, title, width, height }) {
 
+    let [value] = flatstore.useChange(id);
     return (
         <div style={{ display: 'block', paddingLeft: '1rem', paddingBottom: '0.5rem' }}>
 
@@ -224,10 +240,12 @@ function ImageBind({ id, title, width, height }) {
             <input
                 name={id}
                 type="text"
-                value={flatstore.get(id)}
+                value={value}
                 onChange={(e) => {
                     flatstore.set(id, e.target.value);
                     localStorage.setItem(id, e.target.value);
+
+                    flatstore.set('updatedSettings', Date.now());
                 }}
                 style={{ height: '2rem', width: '400px' }}
             />
@@ -236,45 +254,52 @@ function ImageBind({ id, title, width, height }) {
     )
 }
 
-function InputBind(props) {
+function InputBind({ invertId, id, title, allowInvert, options }) {
 
-    let invertId = props.invertId || '';
+    let actionStates = flatstore.get('actionStates');
 
-    let defaultValue = localStorage.getItem(props.id) || flatstore.get(props.id);
-    let defaultChecked = localStorage.getItem('invert/' + invertId) || flatstore.get('invert/' + invertId);
+    invertId = invertId || '';
 
-    defaultValue = Number.parseInt(defaultValue);
+    let [defaultValue] = flatstore.useChange(id);
+    let [defaultChecked] = flatstore.useChange('invert/' + id);
+    // let defaultValue = localStorage.getItem(id) || flatstore.get(id);
+    // let defaultChecked = localStorage.getItem('invert/' + id) || flatstore.get('invert/' + id);
+
+    // defaultValue = Number.parseInt(defaultValue);
     defaultChecked = (defaultChecked == 'false' || !defaultChecked) ? false : true;
 
     return (
         <div style={{ display: 'inline-block', paddingLeft: '1rem' }}>
             <label style={{ fontWeight: 'bold', color: '#eee', paddingRight: '0.5rem', height: '2rem', display: 'inline-block' }}>
-                {props.title}
+                {title}
             </label>
             <select
                 style={{ height: '2rem', width: '100px', color: 'white', backgroundColor: "rgb(34, 34, 34)", borderColor: "rgb(34, 34, 34)" }}
-                name={props.id}
-                defaultValue={defaultValue}
+                name={id}
+                // defaultValue={defaultValue}
+                value={defaultValue}
                 onChange={(e) => {
-                    flatstore.set(props.id, Number.parseInt(e.target.value))
-                    localStorage.setItem(props.id, e.target.value);
+                    flatstore.set(id, Number.parseInt(e.target.value))
+                    // localStorage.setItem(id, e.target.value);
+                    flatstore.set('updatedSettings', Date.now());
                 }}
             >
-                {props.options}
+                {actionStates.map(action => <option key={"option-" + action.index} value={action.index}>{action.type} {action.id}</option>)}
             </select>
             <br />
-            {props.allowInvert && (
-                <>
-                    <span style={{ color: 'white', fontSize: '0.8rem', marginRight: '0.8rem' }}>Invert?</span>
+            {allowInvert && (
+                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.4rem' }}>
+                    <span style={{ color: 'white', fontSize: '0.65rem', }}>Invert?</span>
                     <label className="switch">
-
                         <input type="checkbox" defaultChecked={defaultChecked} onChange={(e) => {
-                            flatstore.set('invert/' + invertId, e.target.checked);
-                            localStorage.setItem('invert/' + invertId, e.target.checked);
+                            flatstore.set('invert/' + id, e.target.checked);
+                            // localStorage.setItem('invert/' + id, e.target.checked);
+
+                            flatstore.set('updatedSettings', Date.now());
                         }} />
                         <span className="slider round"></span>
                     </label>
-                </>
+                </div>
 
             )}
         </div>

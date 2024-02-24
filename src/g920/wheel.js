@@ -6,8 +6,12 @@ flatstore.set('maxrotation', 900);
 function Wheel(props) {
 
     let [imgWheel] = flatstore.useWatch('imgWheel');
-    let [currentRotation] = flatstore.useWatch('valueWheel');
-    let [invert] = flatstore.useWatch("invert/valueWheel");
+    let [valueWheel] = flatstore.useWatch('valueWheel');
+    let [invert] = flatstore.useWatch("invert/btnWheel");
+
+    let { id, index, type, pressed, value } = valueWheel;
+
+    let currentRotation = value;
 
     let maxrotation = flatstore.get('maxrotation');
     let degrees = currentRotation * (maxrotation / 2) * (invert ? -1 : 1);
@@ -61,7 +65,11 @@ function WheelButtons(props) {
 function WheelButtonMask(props) {
 
     let [imgSrc] = flatstore.useWatch("img" + props.id);
-    let [value] = flatstore.useWatch("value" + props.id);
+    let [valueButton] = flatstore.useWatch("value" + props.id);
+
+
+    let { id, index, type, pressed, value } = valueButton;
+
 
     return (
         <img
@@ -73,8 +81,8 @@ function WheelButtonMask(props) {
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                transition: 'opacity 0.2s ease',
-                opacity: value ? 1 : 0,
+                transition: 'opacity 0.05s ease',
+                opacity: Math.abs(value || 0),
                 zIndex: 99
             }}
             src={imgSrc}

@@ -7,6 +7,7 @@ import ShifterBase from './g920/shifterbase';
 
 import RebindInputs from './RebindInputs';
 
+import { defaultProfiles, loadDefaultProfile, loadProfile } from './KeybindProfiles';
 
 import flatstore from 'flatstore';
 
@@ -17,87 +18,7 @@ for (let i = 0; i < 20; i++) {
   defaultAxes.push(0);
 }
 
-
-function getSaved(key) {
-  let value = localStorage.getItem(key);
-  if (value !== null && typeof value !== 'undefined' && (key.indexOf("axis") === 0 || key.indexOf("button") === 0)) {
-    value = Number.parseInt(value);
-  }
-  return value;
-}
-
-function loadSaved(key, defaultValue) {
-  let saved = getSaved(key);
-
-  if (saved == null || typeof saved === 'undefined') {
-    flatstore.set(key, defaultValue);
-    localStorage.setItem(key, defaultValue);
-  }
-  else {
-    flatstore.set(key, saved);
-  }
-}
-
-loadSaved('axisWheel', 0);
-loadSaved('axisGas', 1);
-loadSaved('axisBrake', 2);
-loadSaved('axisClutch', 5);
-loadSaved('buttonGearReverse', 11);
-loadSaved('buttonGear1', 12);
-loadSaved('buttonGear2', 13);
-loadSaved('buttonGear3', 14);
-loadSaved('buttonGear4', 15);
-loadSaved('buttonGear5', 16);
-loadSaved('buttonGear6', 17);
-loadSaved('buttonGear7', 11);
-// loadSaved('buttonGear8', 1);
-
-loadSaved('btnWheel_DUp', 12);
-loadSaved('btnWheel_DDown', 13);
-loadSaved('btnWheel_DLeft', 14);
-loadSaved('btnWheel_DRight', 15);
-loadSaved('btnWheel_Back', 8);
-loadSaved('btnWheel_Start', 9);
-loadSaved('btnWheel_X', 2);
-loadSaved('btnWheel_Y', 3);
-loadSaved('btnWheel_A', 0);
-loadSaved('btnWheel_B', 1);
-loadSaved('btnWheel_RSB', 11);
-loadSaved('btnWheel_LSB', 10);
-loadSaved('btnWheel_LB', 4);
-loadSaved('btnWheel_RB', 5);
-loadSaved('btnWheel_L3', 4);
-loadSaved('btnWheel_R3', 5);
-loadSaved('btnWheel_L4', 4);
-loadSaved('btnWheel_R4', 5);
-
-loadSaved('imgWheel', "/stream-racing-wheel/g920/wheel.png");
-
-loadSaved('imgWheel_DUp', "/stream-racing-wheel/g920/DUp.png");
-loadSaved('imgWheel_DDown', "/stream-racing-wheel/g920/DDown.png");
-loadSaved('imgWheel_DLeft', "/stream-racing-wheel/g920/DLeft.png");
-loadSaved('imgWheel_DRight', "/stream-racing-wheel/g920/DRight.png");
-loadSaved('imgWheel_Back', "/stream-racing-wheel/g920/Back.png");
-loadSaved('imgWheel_Start', "/stream-racing-wheel/g920/Start.png");
-loadSaved('imgWheel_X', "/stream-racing-wheel/g920/X.png");
-loadSaved('imgWheel_Y', "/stream-racing-wheel/g920/Y.png");
-loadSaved('imgWheel_A', "/stream-racing-wheel/g920/A.png");
-loadSaved('imgWheel_B', "/stream-racing-wheel/g920/B.png");
-loadSaved('imgWheel_RSB', "/stream-racing-wheel/g920/RSB.png");
-loadSaved('imgWheel_LSB', "/stream-racing-wheel/g920/LSB.png");
-loadSaved('imgWheel_LB', "/stream-racing-wheel/g920/LB.png");
-loadSaved('imgWheel_RB', "/stream-racing-wheel/g920/RB.png");
-loadSaved('imgWheel_L3', "/stream-racing-wheel/g920/LB.png");
-loadSaved('imgWheel_R3', "/stream-racing-wheel/g920/RB.png");
-loadSaved('imgWheel_L4', "/stream-racing-wheel/g920/LB.png");
-loadSaved('imgWheel_R4', "/stream-racing-wheel/g920/RB.png");
-
-loadSaved('imgPedalBase', '/stream-racing-wheel/g920/pedals.png');
-loadSaved('imgGas', '/stream-racing-wheel/g920/gas.png');
-loadSaved('imgBrake', '/stream-racing-wheel/g920/brake.png');
-loadSaved('imgClutch', '/stream-racing-wheel/g920/clutch.png');
-loadSaved('imgShifterBase', '/stream-racing-wheel/g920/shifter-base.png');
-loadSaved('imgShifter', '/stream-racing-wheel/g920/shifter.png');
+loadDefaultProfile();
 
 flatstore.set('valueWheel', 0);
 flatstore.set('valueBrake', 0);
@@ -133,7 +54,7 @@ flatstore.set('valueWheel_L4', 0);
 flatstore.set('valueWheel_R4', 0);
 // flatstore.set('valueGear8', 0);
 
-
+flatstore.set('actionStates', []);
 flatstore.set("buttons", defaultButtons);
 flatstore.set("axes", defaultAxes);
 class App extends Component {
@@ -282,36 +203,59 @@ class App extends Component {
 
     //var gp = this.gamePads[this.gamePadIndex];
     var gp = navigator.getGamepads()[this.gamePadIndex];
+
+    let actionStates = [];
+
     let buttonStates = [];
-    for (let i = 0; i < gp.buttons.length; i++) {
-      let button = gp.buttons[i];
-      let buttonState = {
-        pressed: button.pressed,
-        touched: button.touched,
-        value: button.value
-      }
-      buttonStates.push(buttonState);
-    }
+    let index = 0;
 
     let axesStates = [];
     for (let i = 0; i < gp.axes.length; i++) {
       let axis = gp.axes[i];
       axesStates.push(axis);
+
+      let axisState = {
+        type: 'Axis',
+        id: i,
+        index: index++,
+        pressed: Math.abs(axis) > 0.05,
+        touched: Math.abs(axis) > 0.05,
+        value: axis
+      }
+      actionStates.push(axisState);
+
     }
 
-    let axisWheel = flatstore.get('axisWheel');
-    let axisGas = flatstore.get('axisGas');
-    let axisBrake = flatstore.get('axisBrake');
-    let axisClutch = flatstore.get('axisClutch');
+    for (let i = 0; i < gp.buttons.length; i++) {
+      let button = gp.buttons[i];
+      let buttonState = {
+        type: 'Button',
+        id: i,
+        index: index++,
+        pressed: button.pressed,
+        touched: button.touched,
+        value: button.value
+      }
+      buttonStates.push(buttonState);
 
-    let buttonGearReverse = flatstore.get('buttonGearReverse');
-    let buttonGear1 = flatstore.get('buttonGear1');
-    let buttonGear2 = flatstore.get('buttonGear2');
-    let buttonGear3 = flatstore.get('buttonGear3');
-    let buttonGear4 = flatstore.get('buttonGear4');
-    let buttonGear5 = flatstore.get('buttonGear5');
-    let buttonGear6 = flatstore.get('buttonGear6');
-    let buttonGear7 = flatstore.get('buttonGear7');
+      actionStates.push(buttonState);
+    }
+
+
+
+    let btnWheel = flatstore.get('btnWheel');
+    let btnGas = flatstore.get('btnGas');
+    let btnBrake = flatstore.get('btnBrake');
+    let btnClutch = flatstore.get('btnClutch');
+
+    let btnGearReverse = flatstore.get('btnGearReverse');
+    let btnGear1 = flatstore.get('btnGear1');
+    let btnGear2 = flatstore.get('btnGear2');
+    let btnGear3 = flatstore.get('btnGear3');
+    let btnGear4 = flatstore.get('btnGear4');
+    let btnGear5 = flatstore.get('btnGear5');
+    let btnGear6 = flatstore.get('btnGear6');
+    let btnGear7 = flatstore.get('btnGear7');
 
     let btnWheel_DUp = flatstore.get('btnWheel_DUp');
     let btnWheel_DDown = flatstore.get('btnWheel_DDown');
@@ -334,77 +278,78 @@ class App extends Component {
 
     // let buttonGear8 = flatstore.get('buttonGear8');
 
-    if (axisWheel != null)
-      flatstore.set('valueWheel', axesStates[axisWheel]);
+    if (btnWheel != null)
+      flatstore.set('valueWheel', actionStates[btnWheel]);
 
-    if (axisGas != null)
-      flatstore.set('valueGas', axesStates[axisGas]);
+    if (btnGas != null)
+      flatstore.set('valueGas', actionStates[btnGas]);
 
-    if (axisBrake != null)
-      flatstore.set('valueBrake', axesStates[axisBrake]);
+    if (btnBrake != null)
+      flatstore.set('valueBrake', actionStates[btnBrake]);
 
-    if (axisClutch != null)
-      flatstore.set('valueClutch', axesStates[axisClutch]);
+    if (btnClutch != null)
+      flatstore.set('valueClutch', actionStates[btnClutch]);
 
-    if (buttonGearReverse != null)
-      flatstore.set('valueGearReverse', buttonStates[buttonGearReverse]?.pressed);
-    if (buttonGear1 != null)
-      flatstore.set('valueGear1', buttonStates[buttonGear1]?.pressed);
-    if (buttonGear2 != null)
-      flatstore.set('valueGear2', buttonStates[buttonGear2]?.pressed);
-    if (buttonGear3 != null)
-      flatstore.set('valueGear3', buttonStates[buttonGear3]?.pressed);
-    if (buttonGear4 != null)
-      flatstore.set('valueGear4', buttonStates[buttonGear4]?.pressed);
-    if (buttonGear5 != null)
-      flatstore.set('valueGear5', buttonStates[buttonGear5]?.pressed);
-    if (buttonGear6 != null)
-      flatstore.set('valueGear6', buttonStates[buttonGear6]?.pressed);
-    if (buttonGear7 != null)
-      flatstore.set('valueGear7', buttonStates[buttonGear7]?.pressed);
+    if (btnGearReverse != null)
+      flatstore.set('valueGearReverse', actionStates[btnGearReverse]);
+    if (btnGear1 != null)
+      flatstore.set('valueGear1', actionStates[btnGear1]);
+    if (btnGear2 != null)
+      flatstore.set('valueGear2', actionStates[btnGear2]);
+    if (btnGear3 != null)
+      flatstore.set('valueGear3', actionStates[btnGear3]);
+    if (btnGear4 != null)
+      flatstore.set('valueGear4', actionStates[btnGear4]);
+    if (btnGear5 != null)
+      flatstore.set('valueGear5', actionStates[btnGear5]);
+    if (btnGear6 != null)
+      flatstore.set('valueGear6', actionStates[btnGear6]);
+    if (btnGear7 != null)
+      flatstore.set('valueGear7', actionStates[btnGear7]);
 
 
 
     if (btnWheel_DUp != null)
-      flatstore.set('valueWheel_DUp', buttonStates[btnWheel_DUp]?.pressed);
+      flatstore.set('valueWheel_DUp', actionStates[btnWheel_DUp]);
     if (btnWheel_DDown != null)
-      flatstore.set('valueWheel_DDown', buttonStates[btnWheel_DDown]?.pressed);
+      flatstore.set('valueWheel_DDown', actionStates[btnWheel_DDown]);
     if (btnWheel_DLeft != null)
-      flatstore.set('valueWheel_DLeft', buttonStates[btnWheel_DLeft]?.pressed);
+      flatstore.set('valueWheel_DLeft', actionStates[btnWheel_DLeft]);
     if (btnWheel_DRight != null)
-      flatstore.set('valueWheel_DRight', buttonStates[btnWheel_DRight]?.pressed);
+      flatstore.set('valueWheel_DRight', actionStates[btnWheel_DRight]);
     if (btnWheel_Back != null)
-      flatstore.set('valueWheel_Back', buttonStates[btnWheel_Back]?.pressed);
+      flatstore.set('valueWheel_Back', actionStates[btnWheel_Back]);
     if (btnWheel_Start != null)
-      flatstore.set('valueWheel_Start', buttonStates[btnWheel_Start]?.pressed);
+      flatstore.set('valueWheel_Start', actionStates[btnWheel_Start]);
     if (btnWheel_X != null)
-      flatstore.set('valueWheel_X', buttonStates[btnWheel_X]?.pressed);
+      flatstore.set('valueWheel_X', actionStates[btnWheel_X]);
     if (btnWheel_Y != null)
-      flatstore.set('valueWheel_Y', buttonStates[btnWheel_Y]?.pressed);
+      flatstore.set('valueWheel_Y', actionStates[btnWheel_Y]);
     if (btnWheel_A != null)
-      flatstore.set('valueWheel_A', buttonStates[btnWheel_A]?.pressed);
+      flatstore.set('valueWheel_A', actionStates[btnWheel_A]);
     if (btnWheel_B != null)
-      flatstore.set('valueWheel_B', buttonStates[btnWheel_B]?.pressed);
+      flatstore.set('valueWheel_B', actionStates[btnWheel_B]);
     if (btnWheel_RSB != null)
-      flatstore.set('valueWheel_RSB', buttonStates[btnWheel_RSB]?.pressed);
+      flatstore.set('valueWheel_RSB', actionStates[btnWheel_RSB]);
     if (btnWheel_LSB != null)
-      flatstore.set('valueWheel_LSB', buttonStates[btnWheel_LSB]?.pressed);
+      flatstore.set('valueWheel_LSB', actionStates[btnWheel_LSB]);
     if (btnWheel_LB != null)
-      flatstore.set('valueWheel_LB', buttonStates[btnWheel_LB]?.pressed);
+      flatstore.set('valueWheel_LB', actionStates[btnWheel_LB]);
     if (btnWheel_RB != null)
-      flatstore.set('valueWheel_RB', buttonStates[btnWheel_RB]?.pressed);
+      flatstore.set('valueWheel_RB', actionStates[btnWheel_RB]);
     if (btnWheel_L3 != null)
-      flatstore.set('valueWheel_L3', buttonStates[btnWheel_L3]?.pressed);
+      flatstore.set('valueWheel_L3', actionStates[btnWheel_L3]);
     if (btnWheel_R3 != null)
-      flatstore.set('valueWheel_R3', buttonStates[btnWheel_R3]?.pressed);
+      flatstore.set('valueWheel_R3', actionStates[btnWheel_R3]);
     if (btnWheel_L4 != null)
-      flatstore.set('valueWheel_L4', buttonStates[btnWheel_L4]?.pressed);
+      flatstore.set('valueWheel_L4', actionStates[btnWheel_L4]);
     if (btnWheel_R4 != null)
-      flatstore.set('valueWheel_R4', buttonStates[btnWheel_R4]?.pressed);
+      flatstore.set('valueWheel_R4', actionStates[btnWheel_R4]);
 
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);
 
+    flatstore.set('actionStates', actionStates);
     flatstore.set("buttons", buttonStates);
     flatstore.set("axes", axesStates);
 

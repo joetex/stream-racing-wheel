@@ -26,15 +26,15 @@ function Shifter(props) {
     let [gear7] = flatstore.useWatch('valueGear7');
     let [gear8] = flatstore.useWatch('valueGear8');
 
-    if (gearReverse) gear = 0;
-    if (gear1) gear = 1;
-    if (gear2) gear = 2;
-    if (gear3) gear = 3;
-    if (gear4) gear = 4;
-    if (gear5) gear = 5;
-    if (gear6) gear = 6;
-    if (gear7) gear = 7;
-    if (gear8) gear = 8;
+    if (gearReverse?.value) gear = 0;
+    if (gear1?.value) gear = 1;
+    if (gear2?.value) gear = 2;
+    if (gear3?.value) gear = 3;
+    if (gear4?.value) gear = 4;
+    if (gear5?.value) gear = 5;
+    if (gear6?.value) gear = 6;
+    if (gear7?.value) gear = 7;
+    if (gear8?.value) gear = 8;
 
 
     switch (gear) {
