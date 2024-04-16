@@ -10,9 +10,10 @@ function Shifter(props) {
     let moveY = 0;
 
 
-    let speed = '100ms';
+    let speed = '200ms';
     let highlightX = 0;
     let highlightY = 0;
+    let displayText = '';
 
     let gear = -1;
 
@@ -38,16 +39,16 @@ function Shifter(props) {
 
 
     switch (gear) {
-        case -1: speed = '500ms'; moveX = 0; moveY = 0; break;
-
-        case 1: moveX = -halfGrid; moveY = -halfGridY; break;
-        case 2: moveX = -halfGrid; moveY = halfGridY; break;
-        case 3: moveX = 0; moveY = -halfGridY; break;
-        case 4: moveX = 0; moveY = halfGridY; break;
-        case 5: moveX = halfGrid; moveY = -halfGridY; break;
-        case 6: moveX = halfGrid; moveY = halfGridY; break;
-        case 7: moveX = halfGrid + (halfGrid); moveY = halfGridY; break;
-        default: speed = '500ms'; moveX = 0; moveY = 0; break;
+        case -1: speed = '500ms'; moveX = 0; moveY = 0; displayText = 'N'; break; 
+        case 0: speed = '500ms'; moveX = halfGrid + (halfGrid); moveY = halfGridY;  displayText = 'R'; break;
+        case 1: moveX = -halfGrid; moveY = -halfGridY; displayText = gear.toString(); break;
+        case 2: moveX = -halfGrid; moveY = halfGridY; displayText = gear.toString(); break;
+        case 3: moveX = 0; moveY = -halfGridY; displayText = gear.toString(); break; 
+        case 4: moveX = 0; moveY = halfGridY; displayText = gear.toString(); break;
+        case 5: moveX = halfGrid; moveY = -halfGridY; displayText = gear.toString(); break;
+        case 6: moveX = halfGrid; moveY = halfGridY; displayText = gear.toString(); break;
+        case 7: moveX = halfGrid + (halfGrid); moveY = halfGridY; displayText = gear.toString(); break;
+        default: speed = '500ms'; moveX = 0; moveY = 0; displayText = 'N'; break; 
     }
     let shifterStyle = {
         width: '150px',
@@ -75,6 +76,7 @@ function Shifter(props) {
     return (
         <div style={{ position: 'relative' }}>
             <div style={highlightStyle}></div>
+            <span style={{ position: 'absolute', top: '-30px', left: '120px', zIndex: '999', color:'white'}}>{displayText}</span>
             <img alt="" style={shifterStyle} src={imgShifter} />
         </div>
     )

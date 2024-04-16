@@ -180,6 +180,13 @@ function RebindInputs(props) {
                 <InputBind title="R3" id="btnWheel_R3" />
                 <InputBind title="L4" id="btnWheel_L4" />
                 <InputBind title="R4" id="btnWheel_R4" />
+                <InputBind title="Plus" id="btnWheel_plus" />
+                <InputBind title="Minus" id="btnWheel_minus" />
+                <InputBind title="Ps" id="btnWheel_ps" />
+                <InputBind title="Option" id="btnWheel_option" />
+                <InputBind title="Share" id="btnWheel_share" />
+                <InputBind title="Return" id="btnWheel_return" />
+
             </div>
             <div>
                 <h3 style={{ color: 'white', padding: '1rem 0' }}>Change Images</h3>
@@ -212,6 +219,12 @@ function RebindInputs(props) {
                 <ImageBind title="R3" id="imgWheel_R3" width="500" height="500" />
                 <ImageBind title="L4" id="imgWheel_L4" width="500" height="500" />
                 <ImageBind title="R4" id="imgWheel_R4" width="500" height="500" />
+                <ImageBind title="plus" id="imgWheel_plus" width="500" height="500" />
+                <ImageBind title="minus" id="imgWheel_minus" width="500" height="500" />
+                <ImageBind title="ps" id="imgWheel_ps" width="500" height="500" />
+                <ImageBind title="option" id="imgWheel_option" width="500" height="500" />
+                <ImageBind title="share" id="imgWheel_share" width="500" height="500" />
+                
 
 
                 {/* <button
@@ -249,7 +262,7 @@ function ImageBind({ id, title, width, height }) {
                 }}
                 style={{ height: '2rem', width: '400px' }}
             />
-            <span style={{ paddingLeft: '10px', color: 'white', fontSize: '12px' }}>{width || 0}x{height || 0} pixels</span>
+            <span style={{ paddingLeft: '10px', color: 'white', fontSize: '12px',filter: 'hue-rotate(180deg)' }}>{width || 0}x{height || 0} pixels</span>
         </div>
     )
 }

@@ -58,6 +58,12 @@ function WheelButtons(props) {
             <WheelButtonMask id="Wheel_R3" wheelStyle={wheelStyle} />
             <WheelButtonMask id="Wheel_L4" wheelStyle={wheelStyle} />
             <WheelButtonMask id="Wheel_R4" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_plus" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_minus" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_ps" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_option" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_share" wheelStyle={wheelStyle} />
+            <WheelButtonMask id="Wheel_return" wheelStyle={wheelStyle} />
         </>
     )
 }

@@ -52,6 +52,12 @@ flatstore.set('valueWheel_L3', 0);
 flatstore.set('valueWheel_R3', 0);
 flatstore.set('valueWheel_L4', 0);
 flatstore.set('valueWheel_R4', 0);
+flatstore.set('valueWheel_plus', 0);
+flatstore.set('valueWheel_minus', 0);
+flatstore.set('valueWheel_ps', 0);
+flatstore.set('valueWheel_option', 0);
+flatstore.set('valueWheel_share', 0);
+flatstore.set('valueWheel_return', 0);
 // flatstore.set('valueGear8', 0);
 
 flatstore.set('actionStates', []);
@@ -128,8 +134,24 @@ class App extends Component {
 
     return (
       <div style={{ width: '100%', height: '100%', position: 'absolute', top: '0px', left: '0px', paddingTop: '1rem', paddingLeft: '2rem' }}>
-        <h1 style={{ color: 'white' }}>Stream Racing Wheel</h1>
-        <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">View on GitHub</a>
+
+        <div style={{ width: '600px', }}>
+          <div style={{ position: 'relative', top: '20px', }}>
+            <Wheel rotation={this.state.rotation} />
+          </div>
+          <div style={{ position: 'relative', top: '-300px', left: "500px", 'marginLeft': '50px' }}>
+            <ShifterBase />
+          </div>
+          <div style={{ position: 'relative', top: '-170px', left: "30px", 'marginLeft': '50px' }}>
+            <Pedals />
+          </div>
+        </div>
+
+        <h1 style={{ color: 'white' }}>Stream Racing Wheel - G923</h1>
+        <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">Remake by Quicko for the g923</a>
+        <br />
+        <br />
+        <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">Original on GitHub make by Joetex</a>
         <br />
         <br />
         <GamepadSelection onChange={(e) => { this.onChange(e) }} />
@@ -168,19 +190,6 @@ class App extends Component {
         <br />
         <br />
         <br />
-        <div style={{ width: '600px', }}>
-
-
-          <div style={{ position: 'relative', top: '20px', }}>
-            <Wheel rotation={this.state.rotation} />
-          </div>
-          <div style={{ position: 'relative', top: '-300px', left: "500px", 'marginLeft': '50px' }}>
-            <ShifterBase />
-          </div>
-          <div style={{ position: 'relative', top: '-170px', left: "30px", 'marginLeft': '50px' }}>
-            <Pedals />
-          </div>
-        </div>
         <div style={{ paddingTop: '5rem' }}>
           <RebindInputs />
         </div>
@@ -275,6 +284,12 @@ class App extends Component {
     let btnWheel_R3 = flatstore.get('btnWheel_R3');
     let btnWheel_L4 = flatstore.get('btnWheel_L4');
     let btnWheel_R4 = flatstore.get('btnWheel_R4');
+    let btnWheel_plus = flatstore.get('btnWheel_plus');
+    let btnWheel_minus = flatstore.get('btnWheel_minus');
+    let btnWheel_ps = flatstore.get('btnWheel_ps');
+    let btnWheel_option = flatstore.get('btnWheel_option');
+    let btnWheel_share = flatstore.get('btnWheel_share');
+    let btnWheel_return = flatstore.get('btnWheel_return');
 
     // let buttonGear8 = flatstore.get('buttonGear8');
 
@@ -345,6 +360,18 @@ class App extends Component {
       flatstore.set('valueWheel_L4', actionStates[btnWheel_L4]);
     if (btnWheel_R4 != null)
       flatstore.set('valueWheel_R4', actionStates[btnWheel_R4]);
+    if (btnWheel_plus != null)
+      flatstore.set('valueWheel_plus', actionStates[btnWheel_plus]);
+    if (btnWheel_minus != null)
+      flatstore.set('valueWheel_minus', actionStates[btnWheel_minus]);
+    if (btnWheel_ps != null)
+      flatstore.set('valueWheel_ps', actionStates[btnWheel_ps]);
+    if (btnWheel_option != null)
+      flatstore.set('valueWheel_option', actionStates[btnWheel_option]);
+    if (btnWheel_share != null)
+      flatstore.set('valueWheel_share', actionStates[btnWheel_share]);
+    if (btnWheel_return != null)
+      flatstore.set('valueWheel_return', actionStates[btnWheel_return]);
 
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);
