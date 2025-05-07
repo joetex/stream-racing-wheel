@@ -5,6 +5,10 @@ Don't have 3 cameras to be showing wheel and pedals? This react application lets
 `**Every image is customizable with a URL from the web.  Create any appearance you want.**`
 
 ### Change Log
+>**May 6, 2025**
+>Added Save/Delete buttons to edit selected profile 
+>Added Cancel button for create profile panel
+
 >**November 26, 2023**
 >All images URLs now saved into localStorage to avoid having to reenter each time.
 
