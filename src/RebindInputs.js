@@ -1,370 +1,266 @@
-import React from "react";
+import React, { useState } from "react";
 import flatstore from "flatstore";
-import {
-    ProfileLoader,
-    getDefaultProfile,
-    loadDefaultProfile,
-    loadProfile,
-} from "./KeybindProfiles";
+import { ProfileLoader } from "./KeybindProfiles";
 
-function PreviewButtons({}) {
-    // let [axes] = flatstore.useWatch('axes');
-    // let [buttons] = flatstore.useWatch('buttons');
+function PreviewButtons() {
     let [actionStates] = flatstore.useWatch("actionStates");
 
-    let actionOptions = [];
+    if (!actionStates || actionStates.length === 0) return null;
 
-    let axisOptions = [];
-    let buttonOptions = [];
     let displayAxes = [];
     let displayButtons = [];
 
-    if (!actionOptions) return <></>;
-
     for (let x = 0; x < actionStates.length; x++) {
         let action = actionStates[x];
-        let { type, id, index, pressed, value } = action;
+        let { type, id, pressed, value } = action;
 
-        if (Math.abs(value) > 0 && value < 1) {
-            value = value.toFixed(2);
-        }
-
-        if (type == "Button") {
+        if (type === "Button") {
             displayButtons.push(
-                <span
+                <div
                     key={"displayButtons-" + id}
-                    style={{
-                        display: "inline-block",
-                        position: "relative",
-                        textAlign: "center",
-                        borderRadius: "50%",
-                        width: "2.5rem",
-                        height: "2.5rem",
-                        padding: "0.5rem",
-                        margin: "0.2rem",
-
-                        backgroundColor: "#222",
-                    }}
+                    className={`monitor-btn-chip ${pressed ? "pressed" : ""}`}
+                    style={
+                        pressed
+                            ? { backgroundColor: `rgba(99, 179, 237, ${Math.max(0.35, Math.abs(value))})` }
+                            : undefined
+                    }
                 >
-                    <span
-                        style={{
-                            backgroundColor: "#222",
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            borderRadius: "50%",
-                            width: "2.5rem",
-                            height: "2.5rem",
-                            padding: "0.5rem",
-                            width: "100%",
-                            height: "100%",
-                            color: !pressed ? "white" : "black",
-                            backgroundColor: !pressed
-                                ? "#222"
-                                : `rgba(255,255,255,${Math.abs(value) * 1})`,
-                        }}
-                    >
-                        {id}
-                    </span>
-                    {/* <span style={{ fontSize: '8px', position: 'absolute', bottom: '4px', left: '25%' }}>{value}</span> */}
-                </span>
+                    <span>{id}</span>
+                </div>
             );
-            actionOptions.push(
-                <option key={"optionButtons-" + index} value={index}>
-                    Button {id}
-                </option>
-            );
-        } else if (type == "Axis") {
+        } else if (type === "Axis") {
             let axisValue = Number.parseFloat(value);
-            let pct = ((axisValue + 1.0) / 2.0) * 100;
-            pct = Math.min(pct, 100);
-            axisValue = axisValue.toFixed(3);
+            let pct = Math.min(Math.max(((axisValue + 1.0) / 2.0) * 100, 0), 100);
             displayAxes.push(
-                <span
-                    style={{
-                        padding: "0.5rem",
-                        width: "50px",
-                        height: "2rem",
-                        margin: "0.5rem",
-                        backgroundColor: "black",
-                        color: "white",
-                        position: "relative",
-                        display: "inline-block",
-                        textAlign: "center",
-                    }}
-                    key={"displayAxes-" + id}
-                >
-                    <span
-                        style={{
-                            width: pct + "%",
-                            height: "0.4rem",
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            transition: "width 0.05s linear",
-                            backgroundColor: `rgba(255,255,255,255)`,
-                        }}
-                    ></span>
-                    {id}
-                </span>
-            );
-
-            actionOptions.push(
-                <option key={"optionAxes-" + index} value={index}>
-                    Axis {id}
-                </option>
+                <div className="monitor-axis-chip" key={"displayAxes-" + id}>
+                    <div className="monitor-axis-bar" style={{ width: pct + "%" }} />
+                    <span className="monitor-axis-label">Axis {id}</span>
+                    <span className="monitor-axis-val">{axisValue.toFixed(2)}</span>
+                </div>
             );
         }
     }
 
     return (
-        <>
-            <div id="displayAxes" style={{ width: "100%" }}>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Axes IDs</h3>
-                {displayAxes}
+        <div className="rebind-card">
+            <div className="rebind-card-header">
+                <h3>Live Input Monitor</h3>
+                <span className="rebind-hint">Move your wheel, pedals, or press buttons to see their IDs</span>
             </div>
-            <div id="displayButtons" style={{ width: "100%", paddingBottom: "1rem" }}>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Button IDs</h3>
-                {displayButtons}
+            <div className="monitor-group">
+                <div className="monitor-label">Axes</div>
+                <div className="monitor-chips">{displayAxes}</div>
             </div>
-        </>
-    );
-}
-
-function RebindInputs(props) {
-    let [gamepad] = flatstore.useWatch("gamePad");
-
-    if (!gamepad) return <></>;
-
-    return (
-        <div style={{ paddingBottom: "3rem" }}>
-            <ProfileLoader />
-            <br />
-            <p style={{ color: "white" }}>
-                Press and move your controller inputs to identify the ID needed to map the input to
-                the correct binding.
-            </p>
-
-            <PreviewButtons />
-            <div style={{ paddingBottom: "1rem" }}>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Wheel and Pedal Binding</h3>
-
-                <InputBind title="Wheel" id="btnWheel" allowInvert={true} invertId={"valueWheel"} />
-                <InputBind title="Gas" id="btnGas" allowInvert={true} invertId={"valueGas"} />
-                <InputBind title="Break" id="btnBrake" allowInvert={true} invertId={"valueBrake"} />
-                <InputBind
-                    title="Clutch"
-                    id="btnClutch"
-                    allowInvert={true}
-                    invertId={"valueClutch"}
-                />
-
-                {/* <InputBind title="Gear 8" id="buttonGear8" options={buttonOptions} /> */}
-            </div>
-            <div style={{ paddingBottom: "1rem" }}>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Gear Binding</h3>
-                <InputBind
-                    title="Gear Reverse"
-                    id="btnGearReverse"
-                    allowInvert={true}
-                    invertId={"valueGearReverse"}
-                />
-                <InputBind
-                    title="Gear 1"
-                    id="btnGear1"
-                    allowInvert={true}
-                    invertId={"valueGear1"}
-                />
-                <InputBind
-                    title="Gear 2"
-                    id="btnGear2"
-                    allowInvert={true}
-                    invertId={"valueGear2"}
-                />
-                <InputBind
-                    title="Gear 3"
-                    id="btnGear3"
-                    allowInvert={true}
-                    invertId={"valueGear3"}
-                />
-                <InputBind
-                    title="Gear 4"
-                    id="btnGear4"
-                    allowInvert={true}
-                    invertId={"valueGear4"}
-                />
-                <InputBind
-                    title="Gear 5"
-                    id="btnGear5"
-                    allowInvert={true}
-                    invertId={"valueGear5"}
-                />
-                <InputBind
-                    title="Gear 6"
-                    id="btnGear6"
-                    allowInvert={true}
-                    invertId={"valueGear6"}
-                />
-                <InputBind
-                    title="Gear 7"
-                    id="btnGear7"
-                    allowInvert={true}
-                    invertId={"valueGear7"}
-                />
-            </div>
-
-            <div style={{ paddingBottom: "1rem" }}>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Wheel Button Binding</h3>
-                <InputBind title="D-Up" id="btnWheel_DUp" />
-                <InputBind title="D-Down" id="btnWheel_DDown" />
-                <InputBind title="D-Left" id="btnWheel_DLeft" />
-                <InputBind title="D-Right" id="btnWheel_DRight" />
-                <InputBind title="Back" id="btnWheel_Back" />
-                <InputBind title="Start" id="btnWheel_Start" />
-                <br />
-                <InputBind title="X" id="btnWheel_X" />
-                <InputBind title="Y" id="btnWheel_Y" />
-                <InputBind title="A" id="btnWheel_A" />
-                <InputBind title="B" id="btnWheel_B" />
-                <InputBind title="RSB" id="btnWheel_RSB" />
-                <InputBind title="LSB" id="btnWheel_LSB" />
-                <InputBind title="LB" id="btnWheel_LB" />
-                <InputBind title="RB" id="btnWheel_RB" />
-                <InputBind title="L3" id="btnWheel_L3" />
-                <InputBind title="R3" id="btnWheel_R3" />
-                <InputBind title="L4" id="btnWheel_L4" />
-                <InputBind title="R4" id="btnWheel_R4" />
-            </div>
-            <div>
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Change Images</h3>
-                <h5
-                    style={{
-                        fontWeight: "light",
-                        color: "white",
-                        padding: "0",
-                        paddingBottom: "1rem",
-                    }}
-                >
-                    Enter an image URL to replace the existing image. Images will be forced to the
-                    pixel ratios below.
-                </h5>
-                <ImageBind title="Wheel" id="imgWheel" width="500" height="500" />
-                <ImageBind title="Pedal Base" id="imgPedalBase" width="400" height="238" />
-                <ImageBind title="Gas Pedal" id="imgGas" width="70" height="121" />
-                <ImageBind title="Brake Pedal" id="imgBrake" width="70" height="96" />
-                <ImageBind title="Clutch Petal" id="imgClutch" width="70" height="96" />
-                <ImageBind title="Shifter Base" id="imgShifterBase" width="250" height="293" />
-                <ImageBind title="Shifter Head" id="imgShifter" width="150" height="150" />
-
-                <h3 style={{ color: "white", padding: "1rem 0" }}>Change Wheel Button Masks</h3>
-                <ImageBind title="D-Up" id="imgWheel_DUp" width="500" height="500" />
-                <ImageBind title="D-Down" id="imgWheel_DDown" width="500" height="500" />
-                <ImageBind title="D-Left" id="imgWheel_DLeft" width="500" height="500" />
-                <ImageBind title="D-Right" id="imgWheel_DRight" width="500" height="500" />
-                <ImageBind title="Back" id="imgWheel_Back" width="500" height="500" />
-                <ImageBind title="Start" id="imgWheel_Start" width="500" height="500" />
-
-                <ImageBind title="X" id="imgWheel_X" width="500" height="500" />
-                <ImageBind title="Y" id="imgWheel_Y" width="500" height="500" />
-                <ImageBind title="A" id="imgWheel_A" width="500" height="500" />
-                <ImageBind title="B" id="imgWheel_B" width="500" height="500" />
-                <ImageBind title="RSB" id="imgWheel_RSB" width="500" height="500" />
-                <ImageBind title="LSB" id="imgWheel_LSB" width="500" height="500" />
-                <ImageBind title="LB" id="imgWheel_LB" width="500" height="500" />
-                <ImageBind title="RB" id="imgWheel_RB" width="500" height="500" />
-                <ImageBind title="L3" id="imgWheel_L3" width="500" height="500" />
-                <ImageBind title="R3" id="imgWheel_R3" width="500" height="500" />
-                <ImageBind title="L4" id="imgWheel_L4" width="500" height="500" />
-                <ImageBind title="R4" id="imgWheel_R4" width="500" height="500" />
-
-                {/* <button
-                    className="resetButton"
-                    onClick={() => {
-                        loadDefaultProfile();
-                    }}>Reset to Default</button> */}
+            <div className="monitor-group">
+                <div className="monitor-label">Buttons</div>
+                <div className="monitor-chips">{displayButtons}</div>
             </div>
         </div>
     );
 }
-/*
 
-*/
+function RebindInputs() {
+    let [gamepad] = flatstore.useWatch("gamePad");
+    const [activeTab, setActiveTab] = useState("driving");
+    const [showMaskImages, setShowMaskImages] = useState(false);
+
+    if (!gamepad) {
+        return (
+            <div className="rebind-empty">
+                <ProfileLoader />
+                <p className="rebind-hint" style={{ marginTop: "0.75rem" }}>
+                    Connect or move a controller/wheel to view live inputs and customize bindings.
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="rebind-container">
+            <ProfileLoader />
+            <PreviewButtons />
+
+            <div className="rebind-tabs">
+                <button
+                    type="button"
+                    className={`rebind-tab-btn ${activeTab === "driving" ? "active" : ""}`}
+                    onClick={() => setActiveTab("driving")}
+                >
+                    Wheel, Pedals &amp; Shifter
+                </button>
+                <button
+                    type="button"
+                    className={`rebind-tab-btn ${activeTab === "buttons" ? "active" : ""}`}
+                    onClick={() => setActiveTab("buttons")}
+                >
+                    Wheel Buttons
+                </button>
+                <button
+                    type="button"
+                    className={`rebind-tab-btn ${activeTab === "images" ? "active" : ""}`}
+                    onClick={() => setActiveTab("images")}
+                >
+                    Custom Images
+                </button>
+            </div>
+
+            {activeTab === "driving" && (
+                <div className="rebind-tab-panel">
+                    <div className="rebind-card">
+                        <div className="rebind-card-header">
+                            <h3>Wheel &amp; Pedals</h3>
+                        </div>
+                        <div className="bind-grid">
+                            <InputBind title="Wheel" id="btnWheel" allowInvert={true} />
+                            <InputBind title="Gas" id="btnGas" allowInvert={true} />
+                            <InputBind title="Brake" id="btnBrake" allowInvert={true} />
+                            <InputBind title="Clutch" id="btnClutch" allowInvert={true} />
+                        </div>
+                    </div>
+
+                    <div className="rebind-card">
+                        <div className="rebind-card-header">
+                            <h3>H-Pattern Shifter</h3>
+                        </div>
+                        <div className="bind-grid">
+                            <InputBind title="Reverse" id="btnGearReverse" allowInvert={true} />
+                            <InputBind title="Gear 1" id="btnGear1" allowInvert={true} />
+                            <InputBind title="Gear 2" id="btnGear2" allowInvert={true} />
+                            <InputBind title="Gear 3" id="btnGear3" allowInvert={true} />
+                            <InputBind title="Gear 4" id="btnGear4" allowInvert={true} />
+                            <InputBind title="Gear 5" id="btnGear5" allowInvert={true} />
+                            <InputBind title="Gear 6" id="btnGear6" allowInvert={true} />
+                            <InputBind title="Gear 7" id="btnGear7" allowInvert={true} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === "buttons" && (
+                <div className="rebind-tab-panel">
+                    <div className="rebind-card">
+                        <div className="rebind-card-header">
+                            <h3>Wheel Button Masks</h3>
+                            <span className="rebind-hint">Used when Button Masks is set to On (Logitech G920)</span>
+                        </div>
+                        <div className="bind-grid">
+                            <InputBind title="D-Up" id="btnWheel_DUp" />
+                            <InputBind title="D-Down" id="btnWheel_DDown" />
+                            <InputBind title="D-Left" id="btnWheel_DLeft" />
+                            <InputBind title="D-Right" id="btnWheel_DRight" />
+                            <InputBind title="Back" id="btnWheel_Back" />
+                            <InputBind title="Start" id="btnWheel_Start" />
+                            <InputBind title="X" id="btnWheel_X" />
+                            <InputBind title="Y" id="btnWheel_Y" />
+                            <InputBind title="A" id="btnWheel_A" />
+                            <InputBind title="B" id="btnWheel_B" />
+                            <InputBind title="LSB" id="btnWheel_LSB" />
+                            <InputBind title="RSB" id="btnWheel_RSB" />
+                            <InputBind title="LB" id="btnWheel_LB" />
+                            <InputBind title="RB" id="btnWheel_RB" />
+                            <InputBind title="L3" id="btnWheel_L3" />
+                            <InputBind title="R3" id="btnWheel_R3" />
+                            <InputBind title="L4" id="btnWheel_L4" />
+                            <InputBind title="R4" id="btnWheel_R4" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === "images" && (
+                <div className="rebind-tab-panel">
+                    <div className="rebind-card">
+                        <div className="rebind-card-header">
+                            <h3>Hardware Images</h3>
+                            <span className="rebind-hint">Enter any image URL or local path to override the active artwork</span>
+                        </div>
+                        <div className="image-bind-list">
+                            <ImageBind title="Wheel" id="imgWheel" width="500" height="500" />
+                            <ImageBind title="Pedal Base" id="imgPedalBase" width="400" height="238" />
+                            <ImageBind title="Gas Pedal" id="imgGas" width="70" height="121" />
+                            <ImageBind title="Brake Pedal" id="imgBrake" width="70" height="96" />
+                            <ImageBind title="Clutch Pedal" id="imgClutch" width="70" height="96" />
+                            <ImageBind title="Shifter Base" id="imgShifterBase" width="250" height="293" />
+                            <ImageBind title="Shifter Head" id="imgShifter" width="150" height="150" />
+                        </div>
+
+                        <button
+                            type="button"
+                            className="rebind-secondary-btn"
+                            style={{ marginTop: "1rem" }}
+                            onClick={() => setShowMaskImages((prev) => !prev)}
+                        >
+                            {showMaskImages ? "Hide Wheel Button Mask Images ▲" : "Show Wheel Button Mask Images (18) ▼"}
+                        </button>
+
+                        {showMaskImages && (
+                            <div className="image-bind-list" style={{ marginTop: "0.85rem" }}>
+                                <ImageBind title="D-Up" id="imgWheel_DUp" width="500" height="500" />
+                                <ImageBind title="D-Down" id="imgWheel_DDown" width="500" height="500" />
+                                <ImageBind title="D-Left" id="imgWheel_DLeft" width="500" height="500" />
+                                <ImageBind title="D-Right" id="imgWheel_DRight" width="500" height="500" />
+                                <ImageBind title="Back" id="imgWheel_Back" width="500" height="500" />
+                                <ImageBind title="Start" id="imgWheel_Start" width="500" height="500" />
+                                <ImageBind title="X" id="imgWheel_X" width="500" height="500" />
+                                <ImageBind title="Y" id="imgWheel_Y" width="500" height="500" />
+                                <ImageBind title="A" id="imgWheel_A" width="500" height="500" />
+                                <ImageBind title="B" id="imgWheel_B" width="500" height="500" />
+                                <ImageBind title="RSB" id="imgWheel_RSB" width="500" height="500" />
+                                <ImageBind title="LSB" id="imgWheel_LSB" width="500" height="500" />
+                                <ImageBind title="LB" id="imgWheel_LB" width="500" height="500" />
+                                <ImageBind title="RB" id="imgWheel_RB" width="500" height="500" />
+                                <ImageBind title="L3" id="imgWheel_L3" width="500" height="500" />
+                                <ImageBind title="R3" id="imgWheel_R3" width="500" height="500" />
+                                <ImageBind title="L4" id="imgWheel_L4" width="500" height="500" />
+                                <ImageBind title="R4" id="imgWheel_R4" width="500" height="500" />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function ImageBind({ id, title, width, height }) {
     let [value] = flatstore.useChange(id);
     return (
-        <div style={{ display: "block", paddingLeft: "1rem", paddingBottom: "0.5rem" }}>
-            <label
-                style={{
-                    fontWeight: "light",
-                    color: "white",
-                    paddingRight: "0.5rem",
-                    width: "150px",
-                    height: "2rem",
-                    display: "inline-block",
-                }}
-            >
-                {title}
-            </label>
+        <div className="image-bind-row">
+            <label className="image-bind-label">{title}</label>
             <input
                 name={id}
                 type="text"
-                value={value}
+                className="image-bind-input"
+                value={value || ""}
                 onChange={(e) => {
                     flatstore.set(id, e.target.value);
                     localStorage.setItem(id, e.target.value);
-
                     flatstore.set("updatedSettings", Date.now());
                 }}
-                style={{ height: "2rem", width: "400px" }}
             />
-            <span style={{ paddingLeft: "10px", color: "white", fontSize: "12px" }}>
-                {width || 0}x{height || 0} pixels
+            <span className="image-bind-dims">
+                {width || 0}×{height || 0}px
             </span>
         </div>
     );
 }
 
-function InputBind({ invertId, id, title, allowInvert, options }) {
-    let actionStates = flatstore.get("actionStates");
-
-    invertId = invertId || "";
-    let [defaultProfile] = flatstore.useWatch("defaultProfile");
+function InputBind({ id, title, allowInvert }) {
+    let actionStates = flatstore.get("actionStates") || [];
     let [defaultValue] = flatstore.useChange(id);
     let [defaultChecked] = flatstore.useWatch("invert/" + id);
-    // let defaultValue = localStorage.getItem(id) || flatstore.get(id);
-    // let defaultChecked = localStorage.getItem('invert/' + id) || flatstore.get('invert/' + id);
 
-    // defaultValue = Number.parseInt(defaultValue);
-    defaultChecked = defaultChecked == "false" || !defaultChecked ? false : true;
+    defaultChecked = defaultChecked === "false" || !defaultChecked ? false : true;
 
     return (
-        <div style={{ display: "inline-block", paddingLeft: "1rem" }}>
-            <label
-                style={{
-                    fontWeight: "bold",
-                    color: "#eee",
-                    paddingRight: "0.5rem",
-                    height: "2rem",
-                    display: "inline-block",
-                }}
-            >
-                {title}
-            </label>
+        <div className="bind-item-card">
+            <label className="bind-item-title">{title}</label>
             <select
-                style={{
-                    height: "2rem",
-                    width: "100px",
-                    color: "white",
-                    backgroundColor: "rgb(34, 34, 34)",
-                    borderColor: "rgb(34, 34, 34)",
-                }}
+                className="bind-item-select"
                 name={id}
-                // defaultValue={defaultValue}
-                value={defaultValue}
+                value={defaultValue ?? ""}
                 onChange={(e) => {
-                    flatstore.set(id, Number.parseInt(e.target.value));
-                    // localStorage.setItem(id, e.target.value);
+                    flatstore.set(id, Number.parseInt(e.target.value, 10));
                     flatstore.set("updatedSettings", Date.now());
                 }}
             >
@@ -374,21 +270,17 @@ function InputBind({ invertId, id, title, allowInvert, options }) {
                     </option>
                 ))}
             </select>
-            <br />
             {allowInvert && (
-                <div style={{ display: "flex", flexDirection: "row", gap: "0.4rem" }}>
-                    <span style={{ color: "white", fontSize: "0.65rem" }}>Invert?</span>
+                <div className="bind-item-invert">
+                    <span>Invert</span>
                     <label className="switch">
                         <input
                             id={"checkbox-" + id}
-                            key={"checkbox-" + id}
                             name={"checkbox-" + id}
                             type="checkbox"
                             checked={defaultChecked}
                             onChange={(e) => {
                                 flatstore.set("invert/" + id, e.target.checked);
-                                // localStorage.setItem('invert/' + id, e.target.checked);
-
                                 flatstore.set("updatedSettings", Date.now());
                             }}
                         />
