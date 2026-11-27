@@ -6,8 +6,10 @@ import Pedals from './g920/pedals';
 import ShifterBase from './g920/shifterbase';
 
 import RebindInputs from './RebindInputs';
+import PresetSelector from './PresetSelector';
 
-import { defaultProfiles, loadDefaultProfile, loadProfile } from './KeybindProfiles';
+import { loadDefaultProfile, loadProfile } from './KeybindProfiles';
+import { MOZA_WHEELS } from './MozaCatalog';
 
 import flatstore from 'flatstore';
 
@@ -69,13 +71,47 @@ class App extends Component {
 
     this.gamePadIndex = -1;
 
-    this.state = {
-      gameLoopStarted: false,
-      rotation: 900,
-      wheelButtonsEnabled: 1
+    const params = new URLSearchParams(window.location.search);
+    const paramProfile = params.get('profile');
+    if (paramProfile) {
+      loadProfile(paramProfile);
+    }
+    const paramWheel = params.get('wheel');
+    if (paramWheel) {
+      const foundWheel = MOZA_WHEELS.find((w) => w.id === paramWheel);
+      if (foundWheel) {
+        flatstore.set('imgWheel', foundWheel.image);
+        flatstore.set('wheelButtonsEnabled', 0);
+      }
+    }
+    const paramRotation = params.get('rotation');
+    const initialRotation = paramRotation ? Number.parseInt(paramRotation, 10) || 900 : 900;
+    if (paramRotation) {
+      flatstore.set('maxrotation', initialRotation);
+    }
+    const paramButtons = params.get('buttons');
+    if (paramButtons !== null) {
+      flatstore.set('wheelButtonsEnabled', paramButtons === '1' ? 1 : 0);
     }
 
-    flatstore.set('wheelButtonsEnabled', 1);
+    const isUrlObs = params.get('obs') === '1';
+    if (isUrlObs) {
+      document.documentElement.style.backgroundColor = 'transparent';
+      document.body.style.backgroundColor = 'transparent';
+    }
+
+    this.state = {
+      gameLoopStarted: false,
+      rotation: initialRotation,
+      wheelButtonsEnabled: flatstore.get('wheelButtonsEnabled') ?? 1,
+      showPedals: params.get('pedals') !== '0',
+      showShifter: params.get('shifter') !== '0',
+      obsMode: isUrlObs
+    }
+
+    flatstore.subscribe('wheelButtonsEnabled', (val) => {
+      this.setState({ wheelButtonsEnabled: val });
+    });
 
     this.gameLoop = this.gameLoop.bind(this);
     this.onGamepadConnected = this.onGamepadConnected.bind(this);
@@ -127,66 +163,83 @@ class App extends Component {
 
 
     return (
-      <div style={{ width: '100%', height: '100%', position: 'absolute', top: '0px', left: '0px', paddingTop: '1rem', paddingLeft: '2rem' }}>
-        <h1 style={{ color: 'white' }}>Stream Racing Wheel</h1>
-        <a style={{ color: 'white' }} href="https://github.com/joetex/stream-racing-wheel">View on GitHub</a>
-        <br />
-        <br />
-        <GamepadSelection onChange={(e) => { this.onChange(e) }} />
-        <br />
-        <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>
-          Max Rotation
-        </label>
-        <input name="wheelRotation"
-          type="number"
-          value={this.state.rotation}
-          onChange={(e) => {
-            this.onWheelRotationChange(e)
-          }} />
-        <br />
-        <label style={{ color: 'white', display: 'inline-block', paddingTop: '0.5rem', paddingRight: '1rem', fontWeight: 'bold' }}>
-          Show Wheel Button Presses
-        </label>
-        <select name="wheelButtonsEnabled"
-          type="number"
-          value={this.state.wheelButtonsEnabled}
-          onChange={(e) => {
-            // this.onWheelRotationChange(e)
+      <div className={`app-shell ${this.state.obsMode ? 'obs-mode' : 'app-layout'}`}>
+        {!this.state.obsMode && (
+          <aside className="sidebar">
+            <div className="app-header">
+              <h1>Stream Racing Wheel</h1>
+              <a href="https://github.com/joetex/stream-racing-wheel">GitHub</a>
+            </div>
 
-            let wheelButtonsEnabled = Number.parseInt(e.target.value);
-            flatstore.set('wheelButtonsEnabled', wheelButtonsEnabled);
-            this.setState({ wheelButtonsEnabled })
+            <PresetSelector
+              rotation={this.state.rotation}
+              wheelButtonsEnabled={this.state.wheelButtonsEnabled}
+              showPedals={this.state.showPedals}
+              setShowPedals={(showPedals) => this.setState({ showPedals })}
+              showShifter={this.state.showShifter}
+              setShowShifter={(showShifter) => this.setState({ showShifter })}
+            />
 
-          }}>
-          <option value="0">No</option>
-          <option value="1">Yes</option>
-        </select>
-        <br />
-        <br />
-        <span style={{ color: 'white' }}><strong>Scroll down</strong> to re-bind inputs and change images</span>
-        <br />
-        <br />
-        <br />
-        <br />
-        <div style={{ width: '600px', }}>
+            <div className="sidebar-card">
+              <div className="sidebar-field">
+                <GamepadSelection onChange={(e) => { this.onChange(e) }} />
+              </div>
+              <div className="sidebar-row-2">
+                <div className="sidebar-field">
+                  <label className="control-label">Max Rotation</label>
+                  <input name="wheelRotation"
+                    type="number"
+                    className="control-input-num"
+                    value={this.state.rotation}
+                    onChange={(e) => {
+                      this.onWheelRotationChange(e)
+                    }} />
+                </div>
+                <div className="sidebar-field">
+                  <label className="control-label">Button Masks</label>
+                  <select name="wheelButtonsEnabled"
+                    type="number"
+                    value={this.state.wheelButtonsEnabled}
+                    onChange={(e) => {
+                      let wheelButtonsEnabled = Number.parseInt(e.target.value, 10);
+                      flatstore.set('wheelButtonsEnabled', wheelButtonsEnabled);
+                      this.setState({ wheelButtonsEnabled })
+                    }}>
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </aside>
+        )}
 
-
-          <div style={{ position: 'relative', top: '20px', }}>
-            <Wheel rotation={this.state.rotation} />
+        <main className="main-stage">
+          <div className="stage-wrapper">
+            <div className="stage-top-row">
+              <div className="stage-wheel">
+                <Wheel rotation={this.state.rotation} />
+              </div>
+              {this.state.showShifter && (
+                <div className="stage-shifter">
+                  <ShifterBase />
+                </div>
+              )}
+            </div>
+            {this.state.showPedals && (
+              <div className="stage-pedals-row">
+                <Pedals />
+              </div>
+            )}
           </div>
-          <div style={{ position: 'relative', top: '-300px', left: "500px", 'marginLeft': '50px' }}>
-            <ShifterBase />
-          </div>
-          <div style={{ position: 'relative', top: '-170px', left: "30px", 'marginLeft': '50px' }}>
-            <Pedals />
-          </div>
-        </div>
-        <div style={{ paddingTop: '5rem' }}>
-          <RebindInputs />
-        </div>
 
+          {!this.state.obsMode && (
+            <div className="rebind-section">
+              <RebindInputs />
+            </div>
+          )}
+        </main>
       </div>
-
     )
   }
 
@@ -395,8 +448,8 @@ function GamepadSelection(props) {
 
 
   return (
-    <div>
-      <label style={{ color: 'white', display: 'inline-block', paddingRight: '1rem', fontWeight: 'bold' }}>Controller Gamepad</label>
+    <div className="sidebar-field">
+      <label className="control-label">Controller Gamepad</label>
       <select name="gamepadSelection" defaultValue={gamePadIndex} onChange={(e) => { onChange(e); props.onChange(e); }}>
         {options}
       </select>

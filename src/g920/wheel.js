@@ -9,14 +9,15 @@ function Wheel(props) {
     let [valueWheel] = flatstore.useWatch('valueWheel');
     let [invert] = flatstore.useWatch("invert/btnWheel");
 
-    let { id, index, type, pressed, value } = valueWheel;
+    let { value } = valueWheel;
 
     let currentRotation = value;
 
     let maxrotation = flatstore.get('maxrotation');
     let degrees = currentRotation * (maxrotation / 2) * (invert ? -1 : 1);
     let wheelStyle = {
-        transform: 'rotate(' + degrees + 'deg)'
+        transform: 'rotate(' + degrees + 'deg)',
+        objectFit: 'contain'
     };
 
     return (
@@ -68,7 +69,7 @@ function WheelButtonMask(props) {
     let [valueButton] = flatstore.useWatch("value" + props.id);
 
 
-    let { id, index, type, pressed, value } = valueButton;
+    let { value } = valueButton;
 
 
     return (
