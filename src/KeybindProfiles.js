@@ -1,8 +1,9 @@
 import flatstore from "flatstore";
 import { useEffect, useState } from "react";
 
-export const defaultProfiles = {
-    G920: {
+const pub = process.env.PUBLIC_URL || "";
+
+const baseG920Profile = {
         btnWheel: 0,
         btnGas: 1,
         btnBrake: 2,
@@ -33,31 +34,50 @@ export const defaultProfiles = {
         btnWheel_R3: 9,
         btnWheel_L4: 8,
         btnWheel_R4: 9,
-        imgWheel: "/stream-racing-wheel/g920/wheel.png",
-        imgWheel_DUp: "/stream-racing-wheel/g920/DUp.png",
-        imgWheel_DDown: "/stream-racing-wheel/g920/DDown.png",
-        imgWheel_DLeft: "/stream-racing-wheel/g920/DLeft.png",
-        imgWheel_DRight: "/stream-racing-wheel/g920/DRight.png",
-        imgWheel_Back: "/stream-racing-wheel/g920/Back.png",
-        imgWheel_Start: "/stream-racing-wheel/g920/Start.png",
-        imgWheel_X: "/stream-racing-wheel/g920/X.png",
-        imgWheel_Y: "/stream-racing-wheel/g920/Y.png",
-        imgWheel_A: "/stream-racing-wheel/g920/A.png",
-        imgWheel_B: "/stream-racing-wheel/g920/B.png",
-        imgWheel_RSB: "/stream-racing-wheel/g920/RSB.png",
-        imgWheel_LSB: "/stream-racing-wheel/g920/LSB.png",
-        imgWheel_LB: "/stream-racing-wheel/g920/LB.png",
-        imgWheel_RB: "/stream-racing-wheel/g920/RB.png",
-        imgWheel_L3: "/stream-racing-wheel/g920/LB.png",
-        imgWheel_R3: "/stream-racing-wheel/g920/RB.png",
-        imgWheel_L4: "/stream-racing-wheel/g920/LB.png",
-        imgWheel_R4: "/stream-racing-wheel/g920/RB.png",
-        imgPedalBase: "/stream-racing-wheel/g920/pedals.png",
-        imgGas: "/stream-racing-wheel/g920/gas.png",
-        imgBrake: "/stream-racing-wheel/g920/brake.png",
-        imgClutch: "/stream-racing-wheel/g920/clutch.png",
-        imgShifterBase: "/stream-racing-wheel/g920/shifter-base.png",
-        imgShifter: "/stream-racing-wheel/g920/shifter.png",
+        wheelButtonsEnabled: 1,
+        imgWheel: `${pub}/g920/wheel.png`,
+        imgWheel_DUp: `${pub}/g920/DUp.png`,
+        imgWheel_DDown: `${pub}/g920/DDown.png`,
+        imgWheel_DLeft: `${pub}/g920/DLeft.png`,
+        imgWheel_DRight: `${pub}/g920/DRight.png`,
+        imgWheel_Back: `${pub}/g920/Back.png`,
+        imgWheel_Start: `${pub}/g920/Start.png`,
+        imgWheel_X: `${pub}/g920/X.png`,
+        imgWheel_Y: `${pub}/g920/Y.png`,
+        imgWheel_A: `${pub}/g920/A.png`,
+        imgWheel_B: `${pub}/g920/B.png`,
+        imgWheel_RSB: `${pub}/g920/RSB.png`,
+        imgWheel_LSB: `${pub}/g920/LSB.png`,
+        imgWheel_LB: `${pub}/g920/LB.png`,
+        imgWheel_RB: `${pub}/g920/RB.png`,
+        imgWheel_L3: `${pub}/g920/LB.png`,
+        imgWheel_R3: `${pub}/g920/RB.png`,
+        imgWheel_L4: `${pub}/g920/LB.png`,
+        imgWheel_R4: `${pub}/g920/RB.png`,
+        imgPedalBase: `${pub}/g920/pedals.png`,
+        imgGas: `${pub}/g920/gas.png`,
+        imgBrake: `${pub}/g920/brake.png`,
+        imgClutch: `${pub}/g920/clutch.png`,
+        imgShifterBase: `${pub}/g920/shifter-base.png`,
+        imgShifter: `${pub}/g920/shifter.png`,
+};
+
+export const defaultProfiles = {
+    G920: baseG920Profile,
+    "MOZA R5 Bundle (ES)": {
+        ...baseG920Profile,
+        wheelButtonsEnabled: 0,
+        imgWheel: `${pub}/moza/wheels/es.png`,
+    },
+    "MOZA CS V2": {
+        ...baseG920Profile,
+        wheelButtonsEnabled: 0,
+        imgWheel: `${pub}/moza/wheels/cs_v2.png`,
+    },
+    "MOZA KS GT": {
+        ...baseG920Profile,
+        wheelButtonsEnabled: 0,
+        imgWheel: `${pub}/moza/wheels/ks.png`,
     },
 };
 
@@ -84,9 +104,8 @@ export function getCurrentProfile() {
     return json;
 }
 
-export function ProfileLoader({}) {
+export function ProfileLoader() {
     let [defaultProfile] = flatstore.useChange("defaultProfile");
-    // let defaultProfile = getDefaultProfile();
     let profiles = getProfiles();
     let profileNames = Object.keys(profiles);
 
@@ -108,174 +127,151 @@ export function ProfileLoader({}) {
     }, []);
 
     return (
-        <div>
-            <label
-                htmlFor="profileLoader"
-                style={{ color: "white", fontSize: "16px", fontWeight: "bold", display: "block" }}
-            >
-                Load Keybind Profile
-            </label>
-            <select
-                name="profileLoader"
-                id="profileLoader"
-                value={isCreate ? "*" : defaultProfile}
-                onChange={(e) => {
-                    let profileName = e.target.value;
-                    if (profileName == "*") {
-                        let curProfileName = getDefaultProfile();
-                        if (curProfileName != "*") {
-                            setPrevProfileName(curProfileName);
-                        }
-
-                        let currentProfile = getCurrentProfile();
-                        setProfileJson(JSON.stringify(currentProfile, null, 2));
-                        setIsCreate(true);
-                        return;
-                    }
-                    loadProfile(profileName);
-                    setIsCreate(false);
-                }}
-            >
-                {profileNames.map((name) => (
-                    <option key={"profilename-" + name} value={name}>
-                        {name}
-                    </option>
-                ))}
-                <option name="new" value="*">
-                    Create new profile
-                </option>
-            </select>
-            {!isCreate && (
-                <span style={{ display: "inline-block", paddingLeft: "1rem" }}>
-                    <button
-                        onClick={() => {
-                            let json = getCurrentProfile();
-                            let curProfileName = getDefaultProfile();
-                            addProfile(curProfileName, json);
-                            loadProfile(curProfileName);
-                            setIsCreate(false);
-                        }}
-                    >
-                        Save
-                    </button>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button
-                        onClick={() => {
-                            if (!window.confirm(`Do you want to DELETE "${profileName}" profile?`))
-                                return;
-
-                            let curProfileName = getDefaultProfile();
-                            removeProfile(curProfileName);
-                            loadProfile("G920");
-                            setIsCreate(false);
-                        }}
-                    >
-                        Delete
-                    </button>
-                </span>
-            )}
-            <br />
-            {isCreate && (
-                <>
-                    <h4
-                        style={{
-                            marginTop: "20px",
-                            color: "white",
-                            fontSize: "18px",
-                            fontWeight: "600",
-                            display: "block",
-                        }}
-                    >
-                        Create Profile from Settings
-                    </h4>
-                    <label
-                        htmlFor="profilename"
-                        style={{
-                            color: "white",
-                            fontSize: "14px",
-                            fontWeight: "300",
-                            display: "block",
-                        }}
-                    >
-                        Profile Name
+        <div className="rebind-card">
+            <div className="profile-bar">
+                <div className="profile-bar-left">
+                    <label htmlFor="profileLoader" className="control-label">
+                        Keybind Profile
                     </label>
-                    <input
-                        type="text"
-                        id="profilename"
-                        name="profilename"
-                        value={profileName}
+                    <select
+                        name="profileLoader"
+                        id="profileLoader"
+                        value={isCreate ? "*" : defaultProfile}
                         onChange={(e) => {
-                            setProfileName(e.target.value);
-                        }}
-                    />
-                    <label
-                        htmlFor="profilename"
-                        style={{
-                            color: "white",
-                            fontSize: "14px",
-                            fontWeight: "300",
-                            display: "block",
-                        }}
-                    >
-                        Profile JSON
-                    </label>
-                    <textarea
-                        style={{ width: "500px", height: "200px" }}
-                        id="profilename"
-                        name="profilejson"
-                        value={profileJson}
-                        onChange={(e) => {
-                            setProfileJson(e.target.value);
-                        }}
-                    ></textarea>
-                    <br />
-                    <button
-                        name="create"
-                        value="create"
-                        onClick={() => {
-                            try {
-                                let json = JSON.parse(profileJson);
-                                if (profileName.length < 3) {
-                                    alert("Profile name must be more than 2 characters.");
-                                    return;
+                            let nextName = e.target.value;
+                            if (nextName === "*") {
+                                let curProfileName = getDefaultProfile();
+                                if (curProfileName !== "*") {
+                                    setPrevProfileName(curProfileName);
                                 }
-
-                                addProfile(profileName, json);
-                                loadProfile(profileName);
-                                setIsCreate(false);
-                            } catch (e) {
-                                alert("Profile JSON is invalid, must be valid JSON syntax.");
-                                console.error(e);
+                                let currentProfile = getCurrentProfile();
+                                setProfileJson(JSON.stringify(currentProfile, null, 2));
+                                setIsCreate(true);
+                                return;
                             }
-                        }}
-                    >
-                        Create Profile
-                    </button>
-                    &nbsp;&nbsp;&nbsp;
-                    <button
-                        name="reset"
-                        value="reset"
-                        onClick={() => {
-                            let defaultProfile = getDefaultProfile();
-                            loadProfile(defaultProfile);
-                            let currentProfile = getCurrentProfile();
-                            setProfileJson(JSON.stringify(currentProfile, null, 2));
-                        }}
-                    >
-                        Reset to G920
-                    </button>
-                    &nbsp;&nbsp;&nbsp;
-                    <button
-                        name="cancel"
-                        value="cancel"
-                        onClick={() => {
-                            loadProfile(prevProfileName);
+                            loadProfile(nextName);
                             setIsCreate(false);
                         }}
                     >
-                        Cancel
-                    </button>
-                </>
+                        {profileNames.map((name) => (
+                            <option key={"profilename-" + name} value={name}>
+                                {name}
+                            </option>
+                        ))}
+                        <option name="new" value="*">
+                            + Create new profile
+                        </option>
+                    </select>
+                </div>
+
+                {!isCreate && (
+                    <div className="profile-bar-actions">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                let json = getCurrentProfile();
+                                let curProfileName = getDefaultProfile();
+                                addProfile(curProfileName, json);
+                                loadProfile(curProfileName);
+                                setIsCreate(false);
+                            }}
+                        >
+                            Save
+                        </button>
+                        <button
+                            type="button"
+                            className="rebind-danger-btn"
+                            disabled={defaultProfile === "G920"}
+                            onClick={() => {
+                                let curProfileName = getDefaultProfile();
+                                if (!window.confirm(`Do you want to DELETE "${curProfileName}" profile?`))
+                                    return;
+
+                                removeProfile(curProfileName);
+                                loadProfile("G920");
+                                setIsCreate(false);
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {isCreate && (
+                <div className="profile-create-panel">
+                    <h4>Create Profile from Current Settings</h4>
+                    <div className="sidebar-field">
+                        <label htmlFor="profilename" className="control-label">
+                            Profile Name
+                        </label>
+                        <input
+                            type="text"
+                            id="profilename"
+                            name="profilename"
+                            placeholder="e.g. My MOZA Drift"
+                            value={profileName}
+                            onChange={(e) => setProfileName(e.target.value)}
+                        />
+                    </div>
+                    <div className="sidebar-field">
+                        <label htmlFor="profilejson" className="control-label">
+                            Profile JSON
+                        </label>
+                        <textarea
+                            className="profile-json-textarea"
+                            id="profilejson"
+                            name="profilejson"
+                            value={profileJson}
+                            onChange={(e) => setProfileJson(e.target.value)}
+                        />
+                    </div>
+                    <div className="profile-bar-actions">
+                        <button
+                            type="button"
+                            name="create"
+                            onClick={() => {
+                                try {
+                                    let json = JSON.parse(profileJson);
+                                    if (profileName.length < 3) {
+                                        alert("Profile name must be more than 2 characters.");
+                                        return;
+                                    }
+                                    addProfile(profileName, json);
+                                    loadProfile(profileName);
+                                    setIsCreate(false);
+                                } catch (e) {
+                                    alert("Profile JSON is invalid, must be valid JSON syntax.");
+                                    console.error(e);
+                                }
+                            }}
+                        >
+                            Create Profile
+                        </button>
+                        <button
+                            type="button"
+                            className="rebind-secondary-btn"
+                            onClick={() => {
+                                let defProfile = getDefaultProfile();
+                                loadProfile(defProfile);
+                                let currentProfile = getCurrentProfile();
+                                setProfileJson(JSON.stringify(currentProfile, null, 2));
+                            }}
+                        >
+                            Reset
+                        </button>
+                        <button
+                            type="button"
+                            className="rebind-secondary-btn"
+                            onClick={() => {
+                                loadProfile(prevProfileName);
+                                setIsCreate(false);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );
@@ -294,7 +290,9 @@ export function setDefaultProfile(profileName) {
 export function getProfiles() {
     try {
         let profiles = localStorage.getItem("profiles");
-        if (profiles) return JSON.parse(profiles);
+        if (profiles) {
+            return { ...defaultProfiles, ...JSON.parse(profiles) };
+        }
     } catch (e) {
         console.error(e);
     }
@@ -310,6 +308,10 @@ export function loadDefaultProfile() {
 export function loadProfile(profileName) {
     let profiles = getProfiles();
     let profile = profiles[profileName];
+    if (!profile) {
+        profileName = "G920";
+        profile = profiles[profileName];
+    }
 
     let keys = Object.keys(profile);
     for (let key of keys) {
@@ -350,7 +352,7 @@ export function addProfile(profileName, profile) {
 
 export function removeProfile(profileName) {
     //cannot delete G920
-    if (profileName == "G920") {
+    if (profileName === "G920") {
         return false;
     }
 
