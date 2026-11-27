@@ -33,7 +33,7 @@ function PreviewButtons() {
             let pct = Math.min(Math.max(((axisValue + 1.0) / 2.0) * 100, 0), 100);
             displayAxes.push(
                 <div className="monitor-axis-chip" key={"displayAxes-" + id}>
-                    <div className="monitor-axis-bar" style={{ width: pct + "%" }} />
+                    <div className="monitor-axis-bar" style={{ transform: `scaleX(${pct / 100})` }} />
                     <span className="monitor-axis-label">Axis {id}</span>
                     <span className="monitor-axis-val">{axisValue.toFixed(2)}</span>
                 </div>

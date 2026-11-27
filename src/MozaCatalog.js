@@ -1,4 +1,4 @@
-const pub = process.env.PUBLIC_URL || "";
+const pub = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export const MOZA_WHEELS = [
     {

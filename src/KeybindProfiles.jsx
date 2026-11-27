@@ -1,7 +1,7 @@
 import flatstore from "flatstore";
 import { useEffect, useState } from "react";
 
-const pub = process.env.PUBLIC_URL || "";
+const pub = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const baseG920Profile = {
         btnWheel: 0,

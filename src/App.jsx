@@ -115,39 +115,58 @@ class App extends Component {
 
     this.gameLoop = this.gameLoop.bind(this);
     this.onGamepadConnected = this.onGamepadConnected.bind(this);
+    this.onGamepadDisconnected = this.onGamepadDisconnected.bind(this);
+  }
+
+  componentDidMount() {
     window.addEventListener("gamepadconnected", this.onGamepadConnected);
+    window.addEventListener("gamepaddisconnected", this.onGamepadDisconnected);
+
+    // Pick up any gamepads the browser already exposed before we mounted.
+    for (const gp of navigator.getGamepads()) {
+      if (gp) this.onGamepadConnected({ gamepad: gp });
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("gamepadconnected", this.onGamepadConnected);
+    window.removeEventListener("gamepaddisconnected", this.onGamepadDisconnected);
+    cancelAnimationFrame(this.start);
   }
 
   onGamepadConnected(e) {
     var gp = navigator.getGamepads()[e.gamepad.index];
+    if (!gp) return;
     console.log(
       "Gamepad connected at index %d: %s. %d buttons, %d axes.",
       gp.index, gp.id, gp.buttons.length, gp.axes.length
     );
 
-    let currentGamePad = flatstore.get('gamePad');
-    if (!currentGamePad) {
-      this.changeGamepad(gp.index);
-    }
-
     this.gamePads[gp.index] = gp;
-    this.setState({ gamePads: this.gamePads })
-    if (gp.id.toLowerCase().indexOf("wheel") > -1) {
+    this.setState({ gamePads: { ...this.gamePads } });
+
+    if (this.gamePadIndex === -1 || gp.id.toLowerCase().indexOf("wheel") > -1) {
       this.changeGamepad(gp.index);
     }
+  }
+
+  onGamepadDisconnected(e) {
+    delete this.gamePads[e.gamepad.index];
+    this.setState({ gamePads: { ...this.gamePads } });
   }
 
   onChange(e) {
     this.changeGamepad(e.target.value);
-
   }
 
   changeGamepad(id) {
-    console.log(id);
+    id = Number.parseInt(id, 10);
     var gp = navigator.getGamepads()[id];
     this.gamePadIndex = id;
+    flatstore.set('gamePadIndex', id);
     flatstore.set('gamePad', gp)
     this.setState({ gamepadIndex: id, gameLoopStarted: true })
+    cancelAnimationFrame(this.start);
     this.gameLoop();
   }
 
@@ -256,6 +275,11 @@ class App extends Component {
 
     //var gp = this.gamePads[this.gamePadIndex];
     var gp = navigator.getGamepads()[this.gamePadIndex];
+    if (!gp) {
+      // Selected device is gone (disconnected); keep polling in case it returns.
+      this.start = requestAnimationFrame(this.gameLoop);
+      return;
+    }
 
     let actionStates = [];
 
@@ -296,6 +320,10 @@ class App extends Component {
 
 
 
+    // A binding may point past this controller's inputs (e.g. a profile made for
+    // a different device); report it as idle instead of undefined.
+    const inputAt = (i) => actionStates[i] || { value: 0, pressed: false, touched: false };
+
     let btnWheel = flatstore.get('btnWheel');
     let btnGas = flatstore.get('btnGas');
     let btnBrake = flatstore.get('btnBrake');
@@ -332,72 +360,72 @@ class App extends Component {
     // let buttonGear8 = flatstore.get('buttonGear8');
 
     if (btnWheel != null)
-      flatstore.set('valueWheel', actionStates[btnWheel]);
+      flatstore.set('valueWheel', inputAt(btnWheel));
 
     if (btnGas != null)
-      flatstore.set('valueGas', actionStates[btnGas]);
+      flatstore.set('valueGas', inputAt(btnGas));
 
     if (btnBrake != null)
-      flatstore.set('valueBrake', actionStates[btnBrake]);
+      flatstore.set('valueBrake', inputAt(btnBrake));
 
     if (btnClutch != null)
-      flatstore.set('valueClutch', actionStates[btnClutch]);
+      flatstore.set('valueClutch', inputAt(btnClutch));
 
     if (btnGearReverse != null)
-      flatstore.set('valueGearReverse', actionStates[btnGearReverse]);
+      flatstore.set('valueGearReverse', inputAt(btnGearReverse));
     if (btnGear1 != null)
-      flatstore.set('valueGear1', actionStates[btnGear1]);
+      flatstore.set('valueGear1', inputAt(btnGear1));
     if (btnGear2 != null)
-      flatstore.set('valueGear2', actionStates[btnGear2]);
+      flatstore.set('valueGear2', inputAt(btnGear2));
     if (btnGear3 != null)
-      flatstore.set('valueGear3', actionStates[btnGear3]);
+      flatstore.set('valueGear3', inputAt(btnGear3));
     if (btnGear4 != null)
-      flatstore.set('valueGear4', actionStates[btnGear4]);
+      flatstore.set('valueGear4', inputAt(btnGear4));
     if (btnGear5 != null)
-      flatstore.set('valueGear5', actionStates[btnGear5]);
+      flatstore.set('valueGear5', inputAt(btnGear5));
     if (btnGear6 != null)
-      flatstore.set('valueGear6', actionStates[btnGear6]);
+      flatstore.set('valueGear6', inputAt(btnGear6));
     if (btnGear7 != null)
-      flatstore.set('valueGear7', actionStates[btnGear7]);
+      flatstore.set('valueGear7', inputAt(btnGear7));
 
 
 
     if (btnWheel_DUp != null)
-      flatstore.set('valueWheel_DUp', actionStates[btnWheel_DUp]);
+      flatstore.set('valueWheel_DUp', inputAt(btnWheel_DUp));
     if (btnWheel_DDown != null)
-      flatstore.set('valueWheel_DDown', actionStates[btnWheel_DDown]);
+      flatstore.set('valueWheel_DDown', inputAt(btnWheel_DDown));
     if (btnWheel_DLeft != null)
-      flatstore.set('valueWheel_DLeft', actionStates[btnWheel_DLeft]);
+      flatstore.set('valueWheel_DLeft', inputAt(btnWheel_DLeft));
     if (btnWheel_DRight != null)
-      flatstore.set('valueWheel_DRight', actionStates[btnWheel_DRight]);
+      flatstore.set('valueWheel_DRight', inputAt(btnWheel_DRight));
     if (btnWheel_Back != null)
-      flatstore.set('valueWheel_Back', actionStates[btnWheel_Back]);
+      flatstore.set('valueWheel_Back', inputAt(btnWheel_Back));
     if (btnWheel_Start != null)
-      flatstore.set('valueWheel_Start', actionStates[btnWheel_Start]);
+      flatstore.set('valueWheel_Start', inputAt(btnWheel_Start));
     if (btnWheel_X != null)
-      flatstore.set('valueWheel_X', actionStates[btnWheel_X]);
+      flatstore.set('valueWheel_X', inputAt(btnWheel_X));
     if (btnWheel_Y != null)
-      flatstore.set('valueWheel_Y', actionStates[btnWheel_Y]);
+      flatstore.set('valueWheel_Y', inputAt(btnWheel_Y));
     if (btnWheel_A != null)
-      flatstore.set('valueWheel_A', actionStates[btnWheel_A]);
+      flatstore.set('valueWheel_A', inputAt(btnWheel_A));
     if (btnWheel_B != null)
-      flatstore.set('valueWheel_B', actionStates[btnWheel_B]);
+      flatstore.set('valueWheel_B', inputAt(btnWheel_B));
     if (btnWheel_RSB != null)
-      flatstore.set('valueWheel_RSB', actionStates[btnWheel_RSB]);
+      flatstore.set('valueWheel_RSB', inputAt(btnWheel_RSB));
     if (btnWheel_LSB != null)
-      flatstore.set('valueWheel_LSB', actionStates[btnWheel_LSB]);
+      flatstore.set('valueWheel_LSB', inputAt(btnWheel_LSB));
     if (btnWheel_LB != null)
-      flatstore.set('valueWheel_LB', actionStates[btnWheel_LB]);
+      flatstore.set('valueWheel_LB', inputAt(btnWheel_LB));
     if (btnWheel_RB != null)
-      flatstore.set('valueWheel_RB', actionStates[btnWheel_RB]);
+      flatstore.set('valueWheel_RB', inputAt(btnWheel_RB));
     if (btnWheel_L3 != null)
-      flatstore.set('valueWheel_L3', actionStates[btnWheel_L3]);
+      flatstore.set('valueWheel_L3', inputAt(btnWheel_L3));
     if (btnWheel_R3 != null)
-      flatstore.set('valueWheel_R3', actionStates[btnWheel_R3]);
+      flatstore.set('valueWheel_R3', inputAt(btnWheel_R3));
     if (btnWheel_L4 != null)
-      flatstore.set('valueWheel_L4', actionStates[btnWheel_L4]);
+      flatstore.set('valueWheel_L4', inputAt(btnWheel_L4));
     if (btnWheel_R4 != null)
-      flatstore.set('valueWheel_R4', actionStates[btnWheel_R4]);
+      flatstore.set('valueWheel_R4', inputAt(btnWheel_R4));
 
     // if (buttonGear8 != null)
     //   flatstore.set('valueGear8', buttonStates[buttonGear8].pressed);
@@ -414,44 +442,39 @@ function GamepadSelection(props) {
 
   let [gamePadIndex] = flatstore.useWatch('gamePadIndex');
 
-  const changeGamepad = (id) => {
-    console.log(id);
-    var gp = navigator.getGamepads()[id];
+  // Poll the device list: the browser's gamepadconnected event can be missed
+  // (e.g. button pressed while the page wasn't focused), so don't rely on it alone.
+  const listDevices = () =>
+    Array.from(navigator.getGamepads())
+      .filter(Boolean)
+      .map((gp) => ({ index: gp.index, id: gp.id }));
+  const [devices, setDevices] = React.useState(listDevices);
 
-    flatstore.set('gamePadIndex', id);
-
-    // gamePadIndex = id;
-    flatstore.set('gamePad', gp)
-    // this.setState({ gamepadIndex: id, gameLoopStarted: true })
-    this.gameLoop();
-  }
-
-  const onChange = (e) => {
-    changeGamepad(e.target.value);
-  }
-
-  let gamePads = navigator.getGamepads();
-
-  var options = Object.values(gamePads).map(gp => {
-    if (!gp)
-      return null;
-    // let isSelected = gp.index === this.gamePadIndex;
-    return (<option
-      key={'optionsGamepad' + gp.id}
-      //selected={isSelected} 
-      value={gp.index}>
-      {gp.id}
-    </option>)
-
-  }
-  );
-
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      const next = listDevices();
+      setDevices((prev) =>
+        JSON.stringify(prev) === JSON.stringify(next) ? prev : next
+      );
+    }, 500);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="sidebar-field">
       <label className="control-label">Controller Gamepad</label>
-      <select name="gamepadSelection" defaultValue={gamePadIndex} onChange={(e) => { onChange(e); props.onChange(e); }}>
-        {options}
+      <select
+        name="gamepadSelection"
+        value={gamePadIndex ?? ''}
+        onChange={(e) => props.onChange(e)}>
+        {devices.length === 0 && (
+          <option value="" disabled>Press a button on a controller…</option>
+        )}
+        {devices.map((gp) => (
+          <option key={'optionsGamepad' + gp.index} value={gp.index}>
+            {gp.id}
+          </option>
+        ))}
       </select>
     </div>
   )

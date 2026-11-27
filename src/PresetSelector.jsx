@@ -22,22 +22,22 @@ function PresetSelector({
         {
             profile: "MOZA R5 Bundle (ES)",
             label: "MOZA R3 / R5 (ES)",
-            thumb: `${process.env.PUBLIC_URL || ""}/moza/wheels/es.png`,
+            thumb: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/moza/wheels/es.png`,
         },
         {
             profile: "MOZA CS V2",
             label: "MOZA CS V2",
-            thumb: `${process.env.PUBLIC_URL || ""}/moza/wheels/cs_v2.png`,
+            thumb: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/moza/wheels/cs_v2.png`,
         },
         {
             profile: "MOZA KS GT",
             label: "MOZA KS GT",
-            thumb: `${process.env.PUBLIC_URL || ""}/moza/wheels/ks.png`,
+            thumb: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/moza/wheels/ks.png`,
         },
         {
             profile: "G920",
             label: "Logitech G920",
-            thumb: `${process.env.PUBLIC_URL || ""}/g920/wheel.png`,
+            thumb: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/g920/wheel.png`,
         },
     ];
 

@@ -680,9 +680,12 @@ code {
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
     height: 3px;
     background: #63b3ed;
-    transition: width 0.05s linear;
+    transform-origin: left center;
+    /* No transition: the monitor re-renders every frame, and restarting a
+       transition each frame makes the bar trail the real axis value. */
   }
 
   .monitor-axis-label {
@@ -817,6 +820,8 @@ code {
 
   .stage-pedals-row {
     position: relative;
-    margin-top: -1rem;
+    /* Pedal sprites overhang the row by up to 20px (see pedals.js top offsets),
+       so leave room for that plus a gap — wheels like the G920 fill their full box. */
+    margin-top: calc(20px + 1rem);
     margin-left: 50px;
   }
