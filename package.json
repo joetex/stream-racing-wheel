@@ -28,7 +28,7 @@
     "react-scripts": {
       "@svgr/webpack": "8.1.0",
       "typescript": "5.0.2",
-      "postcss":"8.4.38"
+      "postcss": "8.4.38"
     }
   },
   "browserslist": {
@@ -44,6 +44,7 @@
     ]
   },
   "devDependencies": {
+    "ajv": "^8.20.0",
     "gh-pages": "^6.1.1"
   }
 }
